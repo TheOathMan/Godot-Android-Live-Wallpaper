@@ -24,6 +24,7 @@ import android.view.SurfaceHolder
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.view.WindowInsets
 import android.view.WindowInsetsAnimation
 import android.view.WindowManager
 import java.io.File
@@ -31,6 +32,7 @@ import java.io.File
 class ProxyActivity(private val serviceContext: Context, private val displayContext:Context) : Activity() {
 
     override fun getResources(): Resources {
+        //displayContext.getRootWindowInsets
         return serviceContext.resources
     }
     override fun getWindow(): Window {
@@ -350,6 +352,10 @@ class ProxyView(private val serviceContext: Context) : View(serviceContext) {
     override fun setSystemUiVisibility(visibility: Int) {
     }
 
+    override fun getRootWindowInsets(): WindowInsets {
+        //var windowInsets:WindowInsets=WindowInsets()
+        return LiveWallpaperService.windowInsets!!
+    }
     override fun setOnSystemUiVisibilityChangeListener(l: OnSystemUiVisibilityChangeListener?) {
         //super.setOnSystemUiVisibilityChangeListener(l)
     }
@@ -359,4 +365,6 @@ class ProxyView(private val serviceContext: Context) : View(serviceContext) {
     }
 
 }
+
+//class ProxyWindowInsets(private val window_insets: WindowInsets):WindowInsets(window_insets){}
 

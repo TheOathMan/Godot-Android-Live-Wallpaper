@@ -55,6 +55,7 @@ class LiveWallpaperService : WallpaperService() {
                 instance = liveWallpaperService
             }
         }
+        var windowInsets:WindowInsets?=null
     }
 
     lateinit var m_godot:Godot
@@ -113,11 +114,13 @@ class LiveWallpaperService : WallpaperService() {
     }
 
     inner class LiveWallpaperEngine : Engine() ,GodotHost {
-        private var proxyActivity: ProxyActivity? = null
 
+
+        private var proxyActivity: ProxyActivity? = null
         override fun onCreate(surfaceHolder: SurfaceHolder) {
             //resources.getDrawable(R.drawable.icon)
             super.onCreate(surfaceHolder)
+            //surfaceHolder.surfaceFrame?.inset()
             if(EngineRun==1) {
                 m_godot = Godot(applicationContext)
                 Log.v(TAG, "LiveWallpaperEngine onCreate")
@@ -127,6 +130,8 @@ class LiveWallpaperService : WallpaperService() {
                 } else {
                     ContextWrapper(applicationContext)
                 }
+
+                //displayContextCompat.get
                 proxyActivity = ProxyActivity(applicationContext, displayContextCompat);
                 m_godot.onCreate(this)
 
@@ -153,8 +158,6 @@ class LiveWallpaperService : WallpaperService() {
                         Log.v(TAG, "PluginName:"+plugin.pluginName)
                         if (plugin.pluginName=="LiveWallpaper") {
                             wpPlugin= plugin as LiveWallpaper?
-
-                            //wpPlugin?.emitSignal("uk")
                         }
 
                     }
@@ -179,7 +182,8 @@ class LiveWallpaperService : WallpaperService() {
         }
 
         override fun onApplyWindowInsets(insets: WindowInsets?) {
-            super.onApplyWindowInsets(insets)
+            windowInsets=insets
+            Log.v(TAG,"onApplyWindowInsets=================================")
             //TODO: send to Godot to inform user about screen insets
             insets?.let {
                 val (top:Int, bottom:Int, left:Int, right:Int) = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -191,6 +195,7 @@ class LiveWallpaperService : WallpaperService() {
                 }
                 wpPlugin?.EmitInsetSignal(left,right,top,bottom)
             }
+            super.onApplyWindowInsets(insets)
 
         }
 
