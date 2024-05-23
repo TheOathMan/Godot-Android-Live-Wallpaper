@@ -2,7 +2,7 @@
 extends EditorPlugin
 
 const PLUGIN_NAME: String = "LiveWallpaper"
-const NODE_NAME:String="LocationAndroid"
+const NODE_NAME:String="LiveWallpaper"
 #//const PLUGIN_PACKAGE: String = "org.godotengine.plugin.android.LiveWallpaper"
 
 var exportPlugin : AndroidExportPlugin
@@ -26,9 +26,9 @@ class AndroidExportPlugin extends EditorExportPlugin:
 		
 	func _get_android_libraries(platform: EditorExportPlatform, debug: bool) -> PackedStringArray:
 		if debug:
-			return PackedStringArray(["AndroidLiveWallpaperPlugin/bin/debug/LiveWallpaper-debug.aar"])
+			return PackedStringArray(["LiveWallpaper/bin/debug/LiveWallpaper-debug.aar"])
 		else:
-			return PackedStringArray(["AndroidLiveWallpaperPlugin/bin/release/LiveWallpaper-release.aar"])
+			return PackedStringArray(["LiveWallpaper/bin/release/LiveWallpaper-release.aar"])
 		
 	
 	func _get_name() -> String:
