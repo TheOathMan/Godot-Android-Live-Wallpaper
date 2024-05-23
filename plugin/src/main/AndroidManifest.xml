@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+   <!--  <uses-permission android:name="android.permission.BIND_WALLPAPER" />
+    -->
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
+    <application>
+
+        <meta-data
+            android:name="org.godotengine.plugin.v2.${godotPluginName}"
+            android:value="${godotPluginPackageName}.LiveWallpaper"/>
+
+        <service
+            android:name=".LiveWallpaperService"
+            android:enabled="true"
+            android:label="Godot Live Wallpaper"
+            android:permission="android.permission.BIND_WALLPAPER"
+            android:exported="true"
+            android:process="${applicationId}.wallpaper"
+            >
+            <!-- android:hardwareAccelerated="false" -->
+
+            <intent-filter>
+                <action android:name="android.service.wallpaper.WallpaperService" />
+
+            </intent-filter>
+            <meta-data
+                android:name="android.service.wallpaper"
+                android:resource="@xml/wallpaper" />
+        </service>
+    </application>
+</manifest>
