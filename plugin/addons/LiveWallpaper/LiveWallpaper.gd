@@ -24,6 +24,9 @@ func _ready():
 
 func start_live_wallpaper_service():
 	get_plugin().startWallpaperService()
+	
+func is_live_wallpaper():
+	return get_plugin().IsLiveWallpaper()
 
 func is_preview()-> bool:
 	return get_plugin().IsPreview()
@@ -46,6 +49,10 @@ func _trim_memory(level:int):
 func _apply_window_insets(L:int,R:int,U:int,D:int):
 	apply_window_insets.emit(L,R,U,D)
 
-
 class dummy:
+	static func startWallpaperService():pass
 	static func IsPreview()-> bool:return false
+	static func isLiveWallpaperInUse()->bool:return false
+	static func ResetToDefaultWallpaper()->void:pass
+	static func IsLiveWallpaper()->bool:return false
+

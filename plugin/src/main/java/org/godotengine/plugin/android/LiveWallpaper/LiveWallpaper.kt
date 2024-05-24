@@ -334,6 +334,11 @@ class LiveWallpaper(godot: Godot): GodotPlugin(godot) {
         }
     }
 
+    @UsedByGodot
+    fun IsLiveWallpaper(): Boolean {
+        return  LiveWallpaperService.getInstance() != null
+    }
+
     fun EmitInsetSignal(L:Int,R:Int,U:Int,D:Int){
         emitSignal("ApplyWindowInsets",L,R,U,D)
     }
