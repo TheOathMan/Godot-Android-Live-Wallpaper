@@ -1,5 +1,7 @@
 # Godot Android Live Wallpaper
-Make your Godot Android application run in the background as a live wallpaper. Created from [`Android Plugin Template`](https://github.com/m4gr3d/Godot-Android-Plugin-Template). Also see [`Creating Android plugins`](https://docs.godotengine.org/en/4.0/tutorials/platform/android/android_plugin.html) for more details about godot plugins for android. To download the release, ready to use plugin files go to the [`Release section`](https://github.com/TheOathMan/Godot-Android-Live-Wallpaper/releases). To learn more about Godot Android Live Wallpaper, read more. 
+Make your Godot Android application run in the background as a live wallpaper. To download the release, ready to use plugin files go to the [`Release section`](https://github.com/TheOathMan/Godot-Android-Live-Wallpaper/releases). To learn more about Godot Android Live Wallpaper, read more. 
+
+This project template is from [`Android Plugin Template`](https://github.com/m4gr3d/Godot-Android-Plugin-Template). Also see [`Creating Android plugins`](https://docs.godotengine.org/en/4.0/tutorials/platform/android/android_plugin.html) for more details about godot plugins for android.
 
 ## How to setup
 * Make sure the addons folder plugin is at `res://addons/`.
@@ -25,11 +27,13 @@ $LiveWallpaper.visibility_changed.connect(is_user_viewing_my_wallpaper)
 ```
 ./gradlew assemble
 ```
-- Static debug and release libraries will be compiled into `addons/LiveWallpaper` folder. With that, you can copy the addons folder into your Godot project folder, and enable the plugin.
+- Static debug and release libraries will be compiled into `addons/LiveWallpaper/bin` folder. With that, you can copy the addons folder into your Godot project folder, and enable the plugin.
 
 ## Important Considerations:
 
-* This plugin is essentially a workaround for Godot's native Android code. While it has been tested with Godot versions 4.2.2.stable and 4.3.dev without any bugs or crashes, users with different devices might encounter issues.
+* The plugin will attempt to run your entire Godot application as a background live wallpaper, including handling all touch inputs. Therefore, ensure you query the is_live_wallpaper() function to delete or limit frame rate and free resources that are not essential to the live wallpaper process, such as UI elements. Check the sample project in the release section for a working implementation of this.
+
+* This plugin is essentially a workaround for Godot's native Android that expect activity not a service. While it the plugin has been tested with Godot versions 4.2.2.stable and 4.3.dev without any noticeable bugs or crashes, users with different devices might encounter issues.
 
 * The plugin runs in the background, so be mindful of memory usage and power consumption once your app starts running as a live wallpaper. The plugin provides callback signals such as 'trim_memory' and 'visibility_changed'. Although the app pauses when it is no longer visible, ensure that you do not run intensive tasks when it becomes visible again.
 
