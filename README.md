@@ -23,11 +23,16 @@ $LiveWallpaper.visibility_changed.connect(is_user_viewing_my_wallpaper)
 ```
 
 ## Building the plugin
-- To build the plugin yourself, open the terminal in the project's root directory, and run this command:
+- You might want to build the plugin yourself to set a wallpaper name and a eallpaper preview picture. To build the plugin, open the terminal in the project's root directory, and run this command:
 ```
 ./gradlew assemble
 ```
 - Static debug and release libraries will be compiled into `addons/LiveWallpaper/bin` folder. With that, you can copy the addons folder into your Godot project folder, and enable the plugin.
+
+## Known Issues/Limitations
+* You can't run two instances of the live wallpaper app that instantiate the Godot engine. So, you cannot set the wallpaper on your device and then open a wallpaper preview of the same wallpaper. This could happen through third-party live wallpaper apps or by calling start_live_wallpaper_service() again. However, the plugin allows you to set a still picture to be shown if another preview of your wallpaper is called from somewhere.
+
+* Setting the app as a live wallpaper for the lock screen, home screen, or both will always set it to both. A workaround is to set it manually from the device wallpaper settings. At least, that's the behavior in Android 14.
 
 ## Important Considerations:
 
