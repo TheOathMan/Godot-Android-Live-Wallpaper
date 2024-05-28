@@ -18,6 +18,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.os.Build
+import android.os.Process
 import android.service.wallpaper.WallpaperService
 import android.util.Log
 import android.view.MotionEvent
@@ -33,8 +34,8 @@ import org.godotengine.godot.plugin.GodotPlugin
 import org.godotengine.godot.plugin.GodotPluginRegistry
 import org.godotengine.godot.plugin.SignalInfo
 import org.godotengine.godot.plugin.UsedByGodot
-import org.godotengine.godot.utils.ProcessPhoenix
 import org.godotengine.godot.xr.XRMode
+
 class LiveWallpaperService : WallpaperService() {
     private val TAG = "godot"
 
@@ -77,6 +78,8 @@ class LiveWallpaperService : WallpaperService() {
     override fun onDestroy() {
         super.onDestroy()
         Log.v(TAG,"WallpaperService onDestroy")
+        Process.killProcess(Process.myPid())
+        Runtime.getRuntime().exit(0)
     }
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
@@ -225,10 +228,10 @@ class LiveWallpaperService : WallpaperService() {
         }
 
         override fun onDestroy() {
-            super.onDestroy()
             Log.v(TAG,"LiveWallpaperEngine onDestroy")
-            godotGLRenderViewLW?.onPause()
-            ProcessPhoenix.forceQuit(activity)
+            //godotGLRenderViewLW?.onPause()
+            super.onDestroy()
+            //ProcessPhoenix.forceQuit(activity)
         }
 
         //==================== GodotHost Requirements ====================\\

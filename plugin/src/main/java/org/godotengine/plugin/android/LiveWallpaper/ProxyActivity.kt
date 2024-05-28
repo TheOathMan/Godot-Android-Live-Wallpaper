@@ -124,8 +124,12 @@ class ProxyActivity(private val serviceContext: Context, private val displayCont
         }
     }
 
+    override fun finishAndRemoveTask() {
+        super.finishAndRemoveTask()
+    }
+
     /*
-    * HIDDEN FUNCTION. DON"T DELETE OR MODIFYY
+    * HIDDEN FUNCTIONS. DON"T DELETE OR MODIFY
     */
     fun getUserID():Int{
         return 0
