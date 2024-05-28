@@ -23,7 +23,9 @@ $LiveWallpaper.visibility_changed.connect(is_user_viewing_my_wallpaper)
 ```
 
 ## Building the plugin
-- You might want to build the plugin yourself to set a wallpaper name and a eallpaper preview picture. To build the plugin, open the terminal in the project's root directory, and run this command:
+You might want to build the plugin yourself to set a wallpaper name and a wallpaper preview picture. To build the plugin:
+
+- Open the terminal in the project's root directory, and run this command:
 ```
 ./gradlew assemble
 ```
