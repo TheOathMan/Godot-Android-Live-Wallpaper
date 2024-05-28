@@ -363,7 +363,6 @@ class ProxyView(private val serviceContext: Context) : View(serviceContext) {
     override fun setWindowInsetsAnimationCallback(callback: WindowInsetsAnimation.Callback?) {
         //super.setWindowInsetsAnimationCallback(callback)
     }
-
 }
 
 //class ProxyWindowInsets(private val window_insets: WindowInsets):WindowInsets(window_insets){}

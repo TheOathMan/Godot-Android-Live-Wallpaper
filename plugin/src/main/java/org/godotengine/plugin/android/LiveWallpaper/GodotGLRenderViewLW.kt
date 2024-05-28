@@ -59,14 +59,6 @@ open class GodotGLRenderViewLW(
     private val inputHandler: GodotInputHandler = GodotInputHandler(this)
     private val godotRenderer: GodotRenderer = GodotRenderer()
     private val customPointerIcons = SparseArray<PointerIcon>()
-    //private val mxrMode:XRMode = xrMode
-
-    init {
-       //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-       //    pointerIcon = PointerIcon.getSystemIcon(context, PointerIcon.TYPE_DEFAULT)
-       //}
-        PreRender()
-    }
 
     override fun getView(): SurfaceView {
         return this

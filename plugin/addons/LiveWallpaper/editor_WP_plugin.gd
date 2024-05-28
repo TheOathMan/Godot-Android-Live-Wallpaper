@@ -2,7 +2,7 @@
 extends EditorPlugin
 
 const PLUGIN_NAME: String = "LiveWallpaper"
-const NODE_NAME:String="LiveWallpaper"
+const NODE_NAME:String="LocationAndroid"
 #//const PLUGIN_PACKAGE: String = "org.godotengine.plugin.android.LiveWallpaper"
 
 var exportPlugin : AndroidExportPlugin
