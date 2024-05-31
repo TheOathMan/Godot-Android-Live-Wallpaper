@@ -9,6 +9,7 @@ import android.app.WallpaperManager
 import android.app.WallpaperManager.FLAG_LOCK
 import android.app.WallpaperManager.FLAG_SYSTEM
 import android.content.ComponentName
+import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -18,6 +19,8 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.os.Process
 import android.service.wallpaper.WallpaperService
 import android.util.Log
@@ -38,6 +41,7 @@ import org.godotengine.godot.xr.XRMode
 
 class LiveWallpaperService : WallpaperService() {
     private val TAG = "godot"
+    private val handler = Handler(Looper.getMainLooper())
 
     companion object {
         private var instance: LiveWallpaperService? = null
@@ -58,7 +62,10 @@ class LiveWallpaperService : WallpaperService() {
     var pathToSecondaryWP:String?=null
     var godotGLRenderViewLW:GodotGLRenderViewLW?=null
     var liveWallpaperEngine:LiveWallpaperEngine?=null
+    var dummyEngine:DummyEngine?=null
     var wpPlugin:LiveWallpaper?=null
+    private var proxyActivity: ProxyActivity? = null
+
     private var EngineRun:Int=0
 
     override fun onCreate() {
@@ -70,7 +77,8 @@ class LiveWallpaperService : WallpaperService() {
         EngineRun++;
         Log.v(TAG, "EngineRun:$EngineRun") //debug
         if (EngineRun >1){
-            return DummyEngine()
+            dummyEngine=DummyEngine()
+            return dummyEngine!!
         }
         liveWallpaperEngine = LiveWallpaperEngine()
         return liveWallpaperEngine!!
@@ -90,8 +98,27 @@ class LiveWallpaperService : WallpaperService() {
          #  TRIM_MEMORY_RUNNING_MODERATE: Similar to TRIM_MEMORY_MODERATE but applies to foreground processes.
          #  TRIM_MEMORY_RUNNING_CRITICAL: System is in a critical memory state and might even terminate foreground processes.
          */
+
         wpPlugin?.EmitMemoryTrim(level)
     }
+
+//    private fun restartWallpaper(context: Context) {
+//        val componentName = ComponentName(context, LiveWallpaperService::class.java)
+//        val wallpaperManager = WallpaperManager.getInstance(context)
+//
+//        try {
+//            // Use reflection to access hidden methods for setting live wallpaper
+//            val setWallpaperComponentMethod = WallpaperManager::class.java.getDeclaredMethod(
+//                "setWallpaperComponent",
+//                ComponentName::class.java
+//            )
+//            setWallpaperComponentMethod.isAccessible = true
+//            setWallpaperComponentMethod.invoke(wallpaperManager, componentName)
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
+//    }
+
 
     inner class DummyEngine : Engine() {
         private val paint = Paint()
@@ -128,7 +155,6 @@ class LiveWallpaperService : WallpaperService() {
     inner class LiveWallpaperEngine : Engine() ,GodotHost {
 
         var Visible: Boolean=false
-        private var proxyActivity: ProxyActivity? = null
 //        fun Pause(){m_godot.onPause(this)}
 //        fun Resume(){m_godot.onResume(this)}
 
@@ -227,11 +253,15 @@ class LiveWallpaperService : WallpaperService() {
             }
         }
 
+
         override fun onDestroy() {
             Log.v(TAG,"LiveWallpaperEngine onDestroy")
-            //godotGLRenderViewLW?.onPause()
+            if (dummyEngine != null){
+                // If the Dummy engine is on top, we kill the service which will restart it.
+                // I don't like this. It's ugly. There has to be other ways.
+                Process.killProcess(Process.myPid())
+            }
             super.onDestroy()
-            //ProcessPhoenix.forceQuit(activity)
         }
 
         //==================== GodotHost Requirements ====================\\
