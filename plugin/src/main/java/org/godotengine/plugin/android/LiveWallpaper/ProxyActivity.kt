@@ -29,7 +29,7 @@ import android.view.WindowInsetsAnimation
 import android.view.WindowManager
 import java.io.File
 
-class ProxyActivity(private val serviceContext: Context, private val displayContext:Context) : Activity() {
+class ProxyActivity(private val serviceContext: Context) : Activity() {
 
     override fun getResources(): Resources {
         //displayContext.getRootWindowInsets
@@ -141,7 +141,7 @@ class ProxyActivity(private val serviceContext: Context, private val displayCont
 
     fun getDisplayId():Int{
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            displayContext.display!!.displayId
+            serviceContext.display!!.displayId
         } else {
             Log.w("DisplayId", "Not supported on versions below Android 11")
             -1 // Or any other default value

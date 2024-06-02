@@ -1,16 +1,11 @@
 package org.godotengine.plugin.android.LiveWallpaper
 
-//import android.opengl.GLSurfaceView
-//import MyGLWallpaperService
-
 import android.annotation.TargetApi
 import android.app.Activity
 import android.app.WallpaperManager
 import android.app.WallpaperManager.FLAG_LOCK
 import android.app.WallpaperManager.FLAG_SYSTEM
 import android.content.ComponentName
-import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -31,25 +26,19 @@ import android.view.WindowInsets
 import android.view.WindowInsets.Type.systemBars
 import android.widget.Toast
 import org.godotengine.godot.Godot
-import org.godotengine.godot.GodotHost
-import org.godotengine.godot.gl.GLSurfaceView
 import org.godotengine.godot.plugin.GodotPlugin
-import org.godotengine.godot.plugin.GodotPluginRegistry
 import org.godotengine.godot.plugin.SignalInfo
 import org.godotengine.godot.plugin.UsedByGodot
-import org.godotengine.godot.xr.XRMode
 
 class LiveWallpaperService : WallpaperService() {
     private val TAG = "godot"
-    private val handler = Handler(Looper.getMainLooper())
-
     companion object {
         private var instance: LiveWallpaperService? = null
-        // Function to get the instance
+
         fun getInstance(): LiveWallpaperService? {
             return instance
         }
-        // Function to initialize the instance
+
         fun initialize(liveWallpaperService: LiveWallpaperService) {
             if (instance == null) {
                 instance = liveWallpaperService
@@ -58,23 +47,23 @@ class LiveWallpaperService : WallpaperService() {
         var windowInsets:WindowInsets?=null
     }
 
-    lateinit var m_godot:Godot
     var pathToSecondaryWP:String?=null
-    var godotGLRenderViewLW:GodotGLRenderViewLW?=null
+    var godotWallpaper:GodotWallpaper?=null
+
     var liveWallpaperEngine:LiveWallpaperEngine?=null
     var dummyEngine:DummyEngine?=null
-    var wpPlugin:LiveWallpaper?=null
-    private var proxyActivity: ProxyActivity? = null
 
     private var EngineRun:Int=0
 
     override fun onCreate() {
         super.onCreate()
         initialize(this)
+        godotWallpaper = GodotWallpaper(applicationContext)
         Log.v(TAG,"WallpaperService onCreate")
     }
     override fun onCreateEngine(): Engine {
         EngineRun++;
+        //return LiveWallpaperEngine()
         Log.v(TAG, "EngineRun:$EngineRun") //debug
         if (EngineRun >1){
             dummyEngine=DummyEngine()
@@ -99,27 +88,90 @@ class LiveWallpaperService : WallpaperService() {
          #  TRIM_MEMORY_RUNNING_CRITICAL: System is in a critical memory state and might even terminate foreground processes.
          */
 
-        wpPlugin?.EmitMemoryTrim(level)
+        godotWallpaper?.wpPlugin?.EmitMemoryTrim(level)
     }
 
-//    private fun restartWallpaper(context: Context) {
-//        val componentName = ComponentName(context, LiveWallpaperService::class.java)
-//        val wallpaperManager = WallpaperManager.getInstance(context)
-//
-//        try {
-//            // Use reflection to access hidden methods for setting live wallpaper
-//            val setWallpaperComponentMethod = WallpaperManager::class.java.getDeclaredMethod(
-//                "setWallpaperComponent",
-//                ComponentName::class.java
-//            )
-//            setWallpaperComponentMethod.isAccessible = true
-//            setWallpaperComponentMethod.invoke(wallpaperManager, componentName)
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//        }
-//    }
+    inner class LiveWallpaperEngine : Engine(){
 
+        var Visible: Boolean=false
+        override fun onCreate(surfaceHolder: SurfaceHolder) {
+            super.onCreate(surfaceHolder)
+            if(EngineRun==1) {//for my sanity
+                godotWallpaper?.onCreate()
+                godotWallpaper?.InitNativeEngine()
+            }
+        }
 
+        override fun onSurfaceCreated(surfaceHolder: SurfaceHolder) {
+            super.onSurfaceCreated(surfaceHolder)
+            godotWallpaper?.InitRenderEngine(surfaceHolder,applicationContext)
+            if(EngineRun==1) {
+                godotWallpaper?.InitPlugins()
+            }
+
+            Log.v(TAG,"onSurfaceCreated")
+        }
+
+        override fun onVisibilityChanged(visible: Boolean) {
+            Visible=visible
+            godotWallpaper?.wpPlugin?.EmitVisibilityChanged(visible)
+            if (!visible) {
+                Log.v(TAG,"not visible")
+                godotWallpaper?.Pause()
+            } else {
+                Log.v(TAG,"visible")
+                godotWallpaper?.Resume()
+            }
+        }
+
+        override fun onApplyWindowInsets(insets: WindowInsets?) {
+            //TODO: is all devices call this function at startup? because we need a WindowInsets with
+            // Godot 4.3. Failing to obtain this before Engine's onCreate(), might result in Error for
+            // our ProxyWindow class.
+            windowInsets=insets
+            insets?.let {
+                val (top:Int, bottom:Int, left:Int, right:Int) = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    with(it.getInsets(systemBars())) {
+                        arrayOf(top, bottom, left, right)
+                    }
+                } else {
+                    arrayOf(it.systemWindowInsetTop, it.systemWindowInsetBottom, it.systemWindowInsetLeft, it.systemWindowInsetRight)
+                }
+                godotWallpaper?.wpPlugin?.EmitInsetSignal(left,right,top,bottom)
+            }
+            super.onApplyWindowInsets(insets)
+
+        }
+
+        override fun onSurfaceChanged(surfaceHolder: SurfaceHolder, format: Int, width: Int, height: Int) {
+            super.onSurfaceChanged(surfaceHolder, format, width, height)
+        }
+
+        override fun onSurfaceDestroyed(surfaceHolder: SurfaceHolder) {
+            Log.v(TAG,"onSurfaceDestroyed")
+            super.onSurfaceDestroyed(surfaceHolder)
+        }
+
+        override fun onTouchEvent(event: MotionEvent?) {
+            super.onTouchEvent(event)
+            if (event != null) {
+                godotWallpaper?.onTouchEvent(event)
+            }
+        }
+
+        override fun onDestroy() {
+            Log.v(TAG,"LiveWallpaperEngine onDestroy")
+            if (dummyEngine != null){
+                // If the Dummy engine is on top, we kill the service. That will restart the service if it was set as a live wallpaper.
+                // I don't like this. It's ugly. There has to be other ways
+                Process.killProcess(Process.myPid())
+            }
+            super.onDestroy()
+            EngineRun--;
+        }
+    }
+
+//============ Second Engine, For static Images
     inner class DummyEngine : Engine() {
         private val paint = Paint()
         private lateinit var textureBitmap: Bitmap
@@ -151,138 +203,9 @@ class LiveWallpaperService : WallpaperService() {
             EngineRun--;
         }
     }
-
-    inner class LiveWallpaperEngine : Engine() ,GodotHost {
-
-        var Visible: Boolean=false
-//        fun Pause(){m_godot.onPause(this)}
-//        fun Resume(){m_godot.onResume(this)}
-
-        override fun onCreate(surfaceHolder: SurfaceHolder) {
-            super.onCreate(surfaceHolder)
-            if(EngineRun==1) {//for my sanity
-                //displayContext?.getExternalFilesDir()
-                m_godot = Godot(applicationContext)
-                val displayContextCompat = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    displayContext?:ContextWrapper(applicationContext)
-                } else {
-                    ContextWrapper(applicationContext)
-                }
-
-                proxyActivity = ProxyActivity(applicationContext, displayContextCompat);
-                m_godot.onCreate(this)
-
-                if (!m_godot.onInitNativeLayer(this)) {
-                    throw IllegalStateException("Unable to initialize engine native layer");
-                }
-
-                godotGLRenderViewLW = object :
-                    GodotGLRenderViewLW(applicationContext, this, m_godot, XRMode.REGULAR) {
-                    override fun getHolder(): SurfaceHolder {
-                        return surfaceHolder
-                    }
-                }.apply {
-                    PreRender()
-                    setEGLContextClientVersion(2);
-                    setRenderer(GetRenderer())
-                    renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
-                }
-                m_godot.renderView = godotGLRenderViewLW
-
-                m_godot.renderView!!.queueOnRenderThread {
-                    for (plugin in GodotPluginRegistry.getPluginRegistry().allPlugins) {
-                        plugin.onRegisterPluginWithGodotNative()
-                        Log.v(TAG, "PluginName:"+plugin.pluginName)
-                        if (plugin.pluginName=="LiveWallpaper") {
-                            wpPlugin= plugin as LiveWallpaper?
-                        }
-                    }
-                }
-            }
-        }
-
-        override fun onSurfaceCreated(surfaceHolder: SurfaceHolder) {
-            super.onSurfaceCreated(surfaceHolder)
-            Log.v(TAG,"onSurfaceCreated")
-        }
-
-        override fun onVisibilityChanged(visible: Boolean) {
-            Visible=visible
-            wpPlugin?.EmitVisibilityChanged(visible)
-            if (!visible) {
-                Log.v(TAG,"not visible")
-                m_godot.onPause(this)
-            } else {
-                Log.v(TAG,"visible")
-                m_godot.onResume(this)
-            }
-        }
-
-        override fun onApplyWindowInsets(insets: WindowInsets?) {
-            //TODO: is all devices call this function at startup? because we need a WindowInsets with
-            // Godot 4.3. Failing to obtain this before Engine's onCreate(), might result in Error for
-            // our ProxyWindow class.
-            windowInsets=insets
-            insets?.let {
-                val (top:Int, bottom:Int, left:Int, right:Int) = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    with(it.getInsets(systemBars())) {
-                        arrayOf(top, bottom, left, right)
-                    }
-                } else {
-                    arrayOf(it.systemWindowInsetTop, it.systemWindowInsetBottom, it.systemWindowInsetLeft, it.systemWindowInsetRight)
-                }
-                wpPlugin?.EmitInsetSignal(left,right,top,bottom)
-            }
-            super.onApplyWindowInsets(insets)
-
-        }
-
-        override fun onSurfaceChanged(surfaceHolder: SurfaceHolder, format: Int, width: Int, height: Int) {
-            super.onSurfaceChanged(surfaceHolder, format, width, height)
-        }
-
-        override fun onSurfaceDestroyed(surfaceHolder: SurfaceHolder) {
-            Log.v(TAG,"onSurfaceDestroyed")
-            super.onSurfaceDestroyed(surfaceHolder)
-        }
-
-        override fun onTouchEvent(event: MotionEvent?) {
-            super.onTouchEvent(event)
-            if (event != null) {
-                godotGLRenderViewLW?.onTouchEvent(event)
-            }
-        }
-
-
-        override fun onDestroy() {
-            Log.v(TAG,"LiveWallpaperEngine onDestroy")
-            if (dummyEngine != null){
-                // If the Dummy engine is on top, we kill the service which will restart it.
-                // I don't like this. It's ugly. There has to be other ways.
-                Process.killProcess(Process.myPid())
-            }
-            super.onDestroy()
-        }
-
-        //==================== GodotHost Requirements ====================\\
-
-        override fun getActivity(): Activity? {
-            return proxyActivity
-            //return ContextWrapper(applicationContext)
-        }
-
-        override fun getGodot(): Godot {
-            return m_godot
-        }
-
-        //override fun onGodotForceQuit(instance: Godot?) {
-        //    super.onGodotForceQuit(instance)
-        //    ProcessPhoenix.forceQuit(activity)
-        //}
-
-    }
 }
 
+//===================== Live Wallpaper Plugin
 
 class LiveWallpaper(godot: Godot): GodotPlugin(godot) {
     private val TAG = "godot"
