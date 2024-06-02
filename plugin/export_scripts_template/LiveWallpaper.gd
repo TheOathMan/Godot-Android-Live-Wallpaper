@@ -30,6 +30,15 @@ func is_live_wallpaper()->bool:
 func set_second_wallpaper_image(path)->void:
 	get_plugin().SetSecondWallpaperImage(path)
 
+enum TrimMemory {
+	COMPLETE         = 80, # The system is experiencing a severe memory shortage and might start killing processes.  
+	MODERATE         = 60, # Memory is getting tight, and the system suggests freeing up as much memory as possible. 
+	BACKGROUND       = 40, # Memory is low, and background processes are strong candidates for termination.
+	UI_HIDDEN        = 20, # Memory is low and UI is no longer visible.
+	RUNNING_CRITICAL = 15, # System is in a critical memory state and might even terminate foreground processes.
+	RUNNING_LOW      = 10, # Memory is running low for foreground processes.
+	RUNNING_MODERATE = 5   # Similar to TRIM_MEMORY_MODERATE but applies to foreground processes.
+}
 
 func _ready():
 	if Engine.has_singleton("LiveWallpaper"):
@@ -75,7 +84,7 @@ func get_plugin():
 func _visibility_changed(visibility:bool)->void:
 	visibility_changed.emit(visibility)
 
-func _trim_memory(level:int)->void:
+func _trim_memory(level:TrimMemory)->void:
 	trim_memory.emit(level)
 
 func _apply_window_insets(L:int,R:int,U:int,D:int)->void:
