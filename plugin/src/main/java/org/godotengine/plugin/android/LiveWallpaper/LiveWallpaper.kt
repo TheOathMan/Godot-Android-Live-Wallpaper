@@ -8,15 +8,8 @@ import android.app.WallpaperManager.FLAG_SYSTEM
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Rect
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
-import android.os.Process
+import android.os.Bundle
 import android.service.wallpaper.WallpaperService
 import android.util.Log
 import android.view.MotionEvent
@@ -29,6 +22,7 @@ import org.godotengine.godot.Godot
 import org.godotengine.godot.plugin.GodotPlugin
 import org.godotengine.godot.plugin.SignalInfo
 import org.godotengine.godot.plugin.UsedByGodot
+import javax.microedition.khronos.opengles.GL10
 
 class LiveWallpaperService : WallpaperService() {
     private val TAG = "godot"
@@ -51,7 +45,6 @@ class LiveWallpaperService : WallpaperService() {
     var godotWallpaper:GodotWallpaper?=null
 
     var liveWallpaperEngine:LiveWallpaperEngine?=null
-    var dummyEngine:DummyEngine?=null
 
     private var EngineRun:Int=0
 
@@ -63,20 +56,13 @@ class LiveWallpaperService : WallpaperService() {
     }
     override fun onCreateEngine(): Engine {
         EngineRun++;
-        //return LiveWallpaperEngine()
         Log.v(TAG, "EngineRun:$EngineRun") //debug
-        if (EngineRun >1){
-            dummyEngine=DummyEngine()
-            return dummyEngine!!
-        }
-        liveWallpaperEngine = LiveWallpaperEngine()
-        return liveWallpaperEngine!!
+        return LiveWallpaperEngine()
     }
     override fun onDestroy() {
-        super.onDestroy()
         Log.v(TAG,"WallpaperService onDestroy")
-        Process.killProcess(Process.myPid())
-        Runtime.getRuntime().exit(0)
+        godotWallpaper?.terminateGodotLiveWallpaperService()
+        super.onDestroy()
     }
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
@@ -94,9 +80,10 @@ class LiveWallpaperService : WallpaperService() {
     inner class LiveWallpaperEngine : Engine(){
 
         var Visible: Boolean=false
+        var mSurfaceHolder: SurfaceHolder?=null
         override fun onCreate(surfaceHolder: SurfaceHolder) {
             super.onCreate(surfaceHolder)
-            if(EngineRun==1) {//for my sanity
+            if(EngineRun==1) {
                 godotWallpaper?.onCreate()
                 godotWallpaper?.InitNativeEngine()
             }
@@ -104,12 +91,18 @@ class LiveWallpaperService : WallpaperService() {
 
         override fun onSurfaceCreated(surfaceHolder: SurfaceHolder) {
             super.onSurfaceCreated(surfaceHolder)
-            godotWallpaper?.InitRenderEngine(surfaceHolder,applicationContext)
+            mSurfaceHolder = surfaceHolder
+            godotWallpaper?.SetSurfaceHolder(mSurfaceHolder!!)
+
             if(EngineRun==1) {
+                godotWallpaper?.InitRenderEngine()
                 godotWallpaper?.InitPlugins()
             }
-
             Log.v(TAG,"onSurfaceCreated")
+        }
+
+        override fun onSurfaceChanged(surfaceHolder: SurfaceHolder, format: Int, width: Int, height: Int) {
+            super.onSurfaceChanged(surfaceHolder, format, width, height)
         }
 
         override fun onVisibilityChanged(visible: Boolean) {
@@ -120,6 +113,9 @@ class LiveWallpaperService : WallpaperService() {
                 godotWallpaper?.Pause()
             } else {
                 Log.v(TAG,"visible")
+                if (godotWallpaper?.godotGLRenderViewLW?.view?.holder!=mSurfaceHolder) {
+                    godotWallpaper?.SetSurfaceHolder(mSurfaceHolder!!)
+                }
                 godotWallpaper?.Resume()
             }
         }
@@ -143,14 +139,6 @@ class LiveWallpaperService : WallpaperService() {
 
         }
 
-        override fun onSurfaceChanged(surfaceHolder: SurfaceHolder, format: Int, width: Int, height: Int) {
-            super.onSurfaceChanged(surfaceHolder, format, width, height)
-        }
-
-        override fun onSurfaceDestroyed(surfaceHolder: SurfaceHolder) {
-            Log.v(TAG,"onSurfaceDestroyed")
-            super.onSurfaceDestroyed(surfaceHolder)
-        }
 
         override fun onTouchEvent(event: MotionEvent?) {
             super.onTouchEvent(event)
@@ -159,53 +147,39 @@ class LiveWallpaperService : WallpaperService() {
             }
         }
 
+        override fun onCommand(
+            action: String?,
+            x: Int,
+            y: Int,
+            z: Int,
+            extras: Bundle?,
+            resultRequested: Boolean
+        ): Bundle {
+            Log.v(TAG, " onCommand(" + action + " " + x + " " + y + " " + z + " " + extras
+                    + " " + resultRequested + ")");
+            //return super.onCommand(action, x, y, z, extras, resultRequested)
+            return Bundle()
+        }
+
+        override fun onSurfaceDestroyed(surfaceHolder: SurfaceHolder) {
+            Log.v(TAG,"onSurfaceDestroyed")
+
+            if (EngineRun==1) {
+                godotWallpaper?.Destroy()
+            }
+
+            super.onSurfaceDestroyed(surfaceHolder)
+        }
+
         override fun onDestroy() {
             Log.v(TAG,"LiveWallpaperEngine onDestroy")
-            if (dummyEngine != null){
-                // If the Dummy engine is on top, we kill the service. That will restart the service if it was set as a live wallpaper.
-                // I don't like this. It's ugly. There has to be other ways
-                Process.killProcess(Process.myPid())
-            }
             super.onDestroy()
             EngineRun--;
         }
     }
 
-//============ Second Engine, For static Images
-    inner class DummyEngine : Engine() {
-        private val paint = Paint()
-        private lateinit var textureBitmap: Bitmap
-        override fun onCreate(surfaceHolder: SurfaceHolder?) {
-            super.onCreate(surfaceHolder)
-            if(pathToSecondaryWP != null)
-                textureBitmap = BitmapFactory.decodeFile(pathToSecondaryWP)
-        }
-        private fun drawFrame() {
-            val holder = surfaceHolder
-            val canvas: Canvas? = holder.lockCanvas()
-            if (canvas != null) {
-                canvas.drawColor(0xFF000000.toInt())
-                if(pathToSecondaryWP != null) {
-                    val destRect = Rect(0, 0, canvas.width, canvas.height)
-                    canvas.drawBitmap(textureBitmap, null, destRect, paint)
-                }
-                holder.unlockCanvasAndPost(canvas)
-            }
-        }
-        override fun onVisibilityChanged(visible: Boolean) {
-            if (visible)
-            {
-                drawFrame()
-            }
-        }
-        override fun onDestroy() {
-            super.onDestroy()
-            EngineRun--;
-        }
-    }
 }
 
-//===================== Live Wallpaper Plugin
 
 class LiveWallpaper(godot: Godot): GodotPlugin(godot) {
     private val TAG = "godot"
@@ -233,18 +207,17 @@ class LiveWallpaper(godot: Godot): GodotPlugin(godot) {
     @TargetApi(Build.VERSION_CODES.N)
     override fun onMainResume() {
         Log.v(TAG,"onMainResume")
-        activity?.let {
-            Log.v(TAG,"Is Wallpaper Lock Set:"+WallpaperManager.getInstance(activity).getWallpaperId(
-                FLAG_LOCK))
-            Log.v(TAG,"Is Wallpaper System Set:"+WallpaperManager.getInstance(activity).getWallpaperId(
-                FLAG_SYSTEM))
-        }
         super.onMainResume()
     }
 
     override fun onMainPause() {
         super.onMainPause()
         Log.v(TAG,"onMainPause")
+    }
+
+    override fun onGLDrawFrame(gl: GL10?) {
+        //Log.v(TAG,"draw---------------")
+        super.onGLDrawFrame(gl)
     }
 
     @UsedByGodot

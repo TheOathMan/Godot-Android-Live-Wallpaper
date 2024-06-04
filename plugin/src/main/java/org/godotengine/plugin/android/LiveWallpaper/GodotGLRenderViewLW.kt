@@ -36,11 +36,14 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.PixelFormat
 import android.os.Build
+import android.os.Handler
 import android.text.TextUtils
+import android.util.Log
 import android.util.SparseArray
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.PointerIcon
+import android.view.SurfaceHolder
 import android.view.SurfaceView
 //import androidx.annotation.Keep
 import org.godotengine.godot.Godot
@@ -83,12 +86,19 @@ open class GodotGLRenderViewLW(
     private val godot: Godot,
     private val xrMode: XRMode,
     private val translucent: Boolean=false,
-    private val useDebugOpengl: Boolean=false
+    private val useDebugOpengl: Boolean=false//,
+    //private var surfaceHolder:SurfaceHolder
 ) :
     GLSurfaceView(context), GodotRenderView {
+
     private val inputHandler: GodotInputHandler = GodotInputHandler(this)
     private val godotRenderer: GodotRenderer = GodotRenderer()
     private val customPointerIcons = SparseArray<PointerIcon>()
+
+//    override fun getHolder(): SurfaceHolder {
+//        //return super.getHolder()
+//        return surfaceHolder
+//    }
 
     override fun getView(): SurfaceView {
         return this
@@ -110,11 +120,9 @@ open class GodotGLRenderViewLW(
         }
     }
 
-    //fun onActivityStopped() {
-    //    pauseGLThread()
-    //}
 
     override fun onActivityResumed() {
+        Log.v("godot","onActivityResumed")
         queueEvent {
 
             // Resume the renderer
@@ -122,10 +130,6 @@ open class GodotGLRenderViewLW(
             GodotLib.focusin()
         }
     }
-
-    //fun onActivityStarted() {
-    //    resumeGLThread()
-    //}
 
     override fun onBackPressed() {
         godot.onBackPressed(host)
