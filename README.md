@@ -31,10 +31,8 @@ You might want to build the plugin yourself to set a wallpaper name and a wallpa
 ```
 - Static debug and release libraries will be compiled into `addons/LiveWallpaper/bin` folder. With that, you can copy the addons folder into your Godot project folder, and enable the plugin.
 
-## Known Issues/Limitations
-* You can't run two instances of the live wallpaper app that instantiate the Godot engine. So, you cannot set the wallpaper on your device and then open a wallpaper preview of the same wallpaper. This could happen through third-party live wallpaper apps or by calling start_live_wallpaper_service() again. However, the plugin allows you to set a still picture to be shown if another preview of your wallpaper is called from somewhere.
-
-* Setting the app as a live wallpaper for the lock screen, home screen, or both will always set it to both. A workaround is to set it manually from the device wallpaper settings. At least, that's the behavior in Android 14.
+## Known Issues
+* Setting the app as a live wallpaper for the lock screen, home screen, or both will always set it to both in Android 14. A workaround is to set it manually from the device wallpaper settings.
 
 ## Important Considerations:
 
@@ -44,4 +42,3 @@ You might want to build the plugin yourself to set a wallpaper name and a wallpa
 
 * The plugin runs in the background, so be mindful of memory usage and power consumption once your app starts running as a live wallpaper. The plugin provides callback signals such as 'trim_memory' and 'visibility_changed'. Although the app pauses when it is no longer visible, ensure that you do not run intensive tasks when it becomes visible again.
 
-* Only one instance of the live wallpaper is allowed to run at a time. Once you set the app as a live wallpaper, other instances of this process (live wallpaper process) will be blocked to prevent crashes. This does not mean you can't run the main app; you can do so without any issues as it's in a different process. It just means you can't run another instance of the live wallpaper, such as watching a preview of your live wallpaper app while it is running as a service in the background. In that case, you can call is_wallpaper_in_use() then tell the users its already running for example.
