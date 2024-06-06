@@ -19,7 +19,9 @@ import org.godotengine.godot.gl.GLSurfaceView
 import org.godotengine.godot.plugin.GodotPluginRegistry
 import org.godotengine.godot.xr.XRMode
 
-
+fun Logwp(msg:String){
+    Log.v("godotwp",msg)
+}
 class GodotWallpaper(private val context: Context) : GodotHost {
 
     private val TAG = "godot"
@@ -60,7 +62,7 @@ class GodotWallpaper(private val context: Context) : GodotHost {
         mGodot.renderView = godotGLRenderViewLW
     }
 
-    private fun NewRender(){
+    fun SurfaceUpdated(){
         view = godotGLRenderViewLW?.view as SurfaceHolder.Callback2
         view?.surfaceDestroyed(mSurfaceHolder!!)
         view?.surfaceCreated(mSurfaceHolder!!)
@@ -72,7 +74,6 @@ class GodotWallpaper(private val context: Context) : GodotHost {
         mGodot.renderView?.queueOnRenderThread {
             for (plugin in GodotPluginRegistry.getPluginRegistry().allPlugins) {
                 plugin.onRegisterPluginWithGodotNative()
-                Log.v(TAG, "PluginName:"+plugin.pluginName)
                 if (plugin.pluginName=="LiveWallpaper") {
                     wpPlugin= plugin as LiveWallpaper?
                 }
@@ -91,7 +92,6 @@ class GodotWallpaper(private val context: Context) : GodotHost {
     }
 
     fun Resume(){
-        NewRender()
         mGodot.onResume(this)
     }
 
@@ -115,7 +115,7 @@ class GodotWallpaper(private val context: Context) : GodotHost {
     }
 
     fun terminateGodotLiveWallpaperService() {
-        Log.v(TAG, "Force quitting Godot instance")
+        Logwp("Force quitting Godot instance")
         Kill()
     }
 

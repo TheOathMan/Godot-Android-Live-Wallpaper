@@ -22,10 +22,8 @@ import org.godotengine.godot.Godot
 import org.godotengine.godot.plugin.GodotPlugin
 import org.godotengine.godot.plugin.SignalInfo
 import org.godotengine.godot.plugin.UsedByGodot
-import javax.microedition.khronos.opengles.GL10
 
 class LiveWallpaperService : WallpaperService() {
-    private val TAG = "godot"
     companion object {
         private var instance: LiveWallpaperService? = null
 
@@ -49,18 +47,18 @@ class LiveWallpaperService : WallpaperService() {
     private var EngineRun:Int=0
 
     override fun onCreate() {
+        Logwp("[Service] onCreate")
         super.onCreate()
         initialize(this)
         godotWallpaper = GodotWallpaper(applicationContext)
-        Log.v(TAG,"WallpaperService onCreate")
     }
     override fun onCreateEngine(): Engine {
-        EngineRun++;
-        Log.v(TAG, "EngineRun:$EngineRun") //debug
+        Logwp( "[Service] EngineRun:$EngineRun") //debug
+        EngineRun++
         return LiveWallpaperEngine()
     }
     override fun onDestroy() {
-        Log.v(TAG,"WallpaperService onDestroy")
+        Logwp("[Service] onDestroy")
         godotWallpaper?.terminateGodotLiveWallpaperService()
         super.onDestroy()
     }
@@ -82,6 +80,7 @@ class LiveWallpaperService : WallpaperService() {
         var Visible: Boolean=false
         var mSurfaceHolder: SurfaceHolder?=null
         override fun onCreate(surfaceHolder: SurfaceHolder) {
+            Logwp("[Engine$EngineRun] onCreate")
             super.onCreate(surfaceHolder)
             if(EngineRun==1) {
                 godotWallpaper?.onCreate()
@@ -90,6 +89,7 @@ class LiveWallpaperService : WallpaperService() {
         }
 
         override fun onSurfaceCreated(surfaceHolder: SurfaceHolder) {
+            Logwp("[Engine$EngineRun] onSurfaceCreated")
             super.onSurfaceCreated(surfaceHolder)
             mSurfaceHolder = surfaceHolder
             godotWallpaper?.SetSurfaceHolder(mSurfaceHolder!!)
@@ -98,23 +98,28 @@ class LiveWallpaperService : WallpaperService() {
                 godotWallpaper?.InitRenderEngine()
                 godotWallpaper?.InitPlugins()
             }
-            Log.v(TAG,"onSurfaceCreated")
+
+            if(EngineRun>1){
+                godotWallpaper?.SurfaceUpdated()
+            }
         }
 
         override fun onSurfaceChanged(surfaceHolder: SurfaceHolder, format: Int, width: Int, height: Int) {
             super.onSurfaceChanged(surfaceHolder, format, width, height)
+            Logwp("[Engine$EngineRun] onSurfaceChanged")
         }
 
         override fun onVisibilityChanged(visible: Boolean) {
             Visible=visible
             godotWallpaper?.wpPlugin?.EmitVisibilityChanged(visible)
             if (!visible) {
-                Log.v(TAG,"not visible")
+                Logwp("[Engine$EngineRun] not visible")
                 godotWallpaper?.Pause()
             } else {
-                Log.v(TAG,"visible")
+                Logwp("[Engine$EngineRun] visible")
                 if (godotWallpaper?.godotGLRenderViewLW?.view?.holder!=mSurfaceHolder) {
                     godotWallpaper?.SetSurfaceHolder(mSurfaceHolder!!)
+                    godotWallpaper?.SurfaceUpdated()
                 }
                 godotWallpaper?.Resume()
             }
@@ -135,8 +140,8 @@ class LiveWallpaperService : WallpaperService() {
                 }
                 godotWallpaper?.wpPlugin?.EmitInsetSignal(left,right,top,bottom)
             }
-            super.onApplyWindowInsets(insets)
 
+            super.onApplyWindowInsets(insets)
         }
 
 
@@ -155,26 +160,22 @@ class LiveWallpaperService : WallpaperService() {
             extras: Bundle?,
             resultRequested: Boolean
         ): Bundle {
-            Log.v(TAG, " onCommand(" + action + " " + x + " " + y + " " + z + " " + extras
-                    + " " + resultRequested + ")");
-            //return super.onCommand(action, x, y, z, extras, resultRequested)
+            godotWallpaper?.wpPlugin?.EmitOnCommand(action?:"null",x,y,z,resultRequested)
             return Bundle()
         }
 
         override fun onSurfaceDestroyed(surfaceHolder: SurfaceHolder) {
-            Log.v(TAG,"onSurfaceDestroyed")
-
+            Logwp("[Engine$EngineRun] onSurfaceDestroyed")
             if (EngineRun==1) {
                 godotWallpaper?.Destroy()
             }
-
             super.onSurfaceDestroyed(surfaceHolder)
         }
 
         override fun onDestroy() {
-            Log.v(TAG,"LiveWallpaperEngine onDestroy")
+            Logwp("[Engine$EngineRun] onDestroy")
             super.onDestroy()
-            EngineRun--;
+            EngineRun--
         }
     }
 
@@ -182,42 +183,35 @@ class LiveWallpaperService : WallpaperService() {
 
 
 class LiveWallpaper(godot: Godot): GodotPlugin(godot) {
-    private val TAG = "godot"
     override fun getPluginName() = "LiveWallpaper"
 
     override fun getPluginSignals(): Set<SignalInfo> {
+        Logwp("[Plugin] getPluginSignals")
         val signal = mutableSetOf<SignalInfo>()
         signal.add(SignalInfo("TrimMemory",Integer::class.java))
         signal.add(SignalInfo("ApplyWindowInsets",Integer::class.java,Integer::class.java,Integer::class.java,Integer::class.java))
         signal.add(SignalInfo("VisibilityChanged",java.lang.Boolean::class.java))
+        signal.add(SignalInfo("OnCommand", String::class.java, Integer::class.java, Integer::class.java, Integer::class.java, java.lang.Boolean::class.java))
         return signal
     }
 
     override fun onMainCreate(activity: Activity?): View? {
-        Log.v(TAG,"onMainCreate GodotPlugin")
-        //Log.v(TAG,"Is Wallpaper in use? "+isLiveWallpaperInUse().toString())
+        Logwp("[Plugin] onMainCreate")
         return super.onMainCreate(activity)
     }
 
     override fun onMainDestroy() {
-        Log.v(TAG,"onMainDestroy")
+        Logwp("[Plugin] onMainDestroy")
         super.onMainDestroy()
     }
 
     @TargetApi(Build.VERSION_CODES.N)
     override fun onMainResume() {
-        Log.v(TAG,"onMainResume")
         super.onMainResume()
     }
 
     override fun onMainPause() {
         super.onMainPause()
-        Log.v(TAG,"onMainPause")
-    }
-
-    override fun onGLDrawFrame(gl: GL10?) {
-        //Log.v(TAG,"draw---------------")
-        super.onGLDrawFrame(gl)
     }
 
     @UsedByGodot
@@ -259,9 +253,13 @@ class LiveWallpaper(godot: Godot): GodotPlugin(godot) {
 
     @UsedByGodot
     fun isLiveWallpaperInUse(): Boolean {
-        val wallpaperManager = WallpaperManager.getInstance(activity)
-        val wallpaperInfo = wallpaperManager.wallpaperInfo
-        return wallpaperInfo != null
+        val wallpaperManager = WallpaperManager.getInstance(activity!!)
+        // Check if wallpaper service is set (indirect approach)
+        val currentWallpaperService = wallpaperManager.wallpaperInfo
+        if (currentWallpaperService != null && currentWallpaperService.packageName == activity!!.packageName) {
+            return true
+        }
+        return false
     }
 
     @UsedByGodot
@@ -303,6 +301,10 @@ class LiveWallpaper(godot: Godot): GodotPlugin(godot) {
 
     fun EmitVisibilityChanged(isVisible:Boolean){
         emitSignal("VisibilityChanged",isVisible)
+    }
+
+    fun EmitOnCommand(action: String,x:Int,y:Int,z:Int,result:Boolean){
+        emitSignal("OnCommand",action,x,y,z,result)
     }
 
 }

@@ -156,218 +156,203 @@ class ProxyWindow(context: Context?) : Window(context){
     }
 
     override fun takeSurface(p0: SurfaceHolder.Callback2?) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun takeInputQueue(p0: InputQueue.Callback?) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun isFloating(): Boolean {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun setContentView(p0: Int) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun setContentView(p0: View?) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun setContentView(p0: View?, p1: ViewGroup.LayoutParams?) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun addContentView(p0: View?, p1: ViewGroup.LayoutParams?) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun getCurrentFocus(): View? {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun getLayoutInflater(): LayoutInflater {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun setTitle(p0: CharSequence?) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun setTitleColor(p0: Int) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun openPanel(p0: Int, p1: KeyEvent?) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun closePanel(p0: Int) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun togglePanel(p0: Int, p1: KeyEvent?) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun invalidatePanelMenu(p0: Int) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun performPanelShortcut(p0: Int, p1: Int, p2: KeyEvent?, p3: Int): Boolean {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun performPanelIdentifierAction(p0: Int, p1: Int, p2: Int): Boolean {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun closeAllPanels() {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun performContextMenuIdentifierAction(p0: Int, p1: Int): Boolean {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun onConfigurationChanged(p0: Configuration?) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun setBackgroundDrawable(p0: Drawable?) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun setFeatureDrawableResource(p0: Int, p1: Int) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun setFeatureDrawableUri(p0: Int, p1: Uri?) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun setFeatureDrawable(p0: Int, p1: Drawable?) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun setFeatureDrawableAlpha(p0: Int, p1: Int) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun setFeatureInt(p0: Int, p1: Int) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun takeKeyEvents(p0: Boolean) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun superDispatchKeyEvent(p0: KeyEvent?): Boolean {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun superDispatchKeyShortcutEvent(p0: KeyEvent?): Boolean {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun superDispatchTouchEvent(p0: MotionEvent?): Boolean {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun superDispatchTrackballEvent(p0: MotionEvent?): Boolean {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun superDispatchGenericMotionEvent(p0: MotionEvent?): Boolean {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun getDecorView(): View {
-        //TODO("Not yet implemented")
+        //TODO("Not yet needed")
         return ProxyView(context)
     }
 
     override fun peekDecorView(): View {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun saveHierarchyState(): Bundle {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun restoreHierarchyState(p0: Bundle?) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun onActive() {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun setChildDrawable(p0: Int, p1: Drawable?) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun setChildInt(p0: Int, p1: Int) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun isShortcutKey(p0: Int, p1: KeyEvent?): Boolean {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun setVolumeControlStream(p0: Int) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun getVolumeControlStream(): Int {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun getStatusBarColor(): Int {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun setStatusBarColor(p0: Int) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun getNavigationBarColor(): Int {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun setNavigationBarColor(p0: Int) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun setDecorCaptionShade(p0: Int) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 
     override fun setResizingCaptionDrawable(p0: Drawable?) {
-        TODO("Not yet implemented")
+        TODO("Not yet needed")
     }
 }
 
 class ProxyView(private val serviceContext: Context) : View(serviceContext) {
-
-
-    @Deprecated("Deprecated in Java")
-    override fun setSystemUiVisibility(visibility: Int) {
-    }
-
     override fun getRootWindowInsets(): WindowInsets {
-        //var windowInsets:WindowInsets=WindowInsets()
         return LiveWallpaperService.windowInsets!!
-    }
-    override fun setOnSystemUiVisibilityChangeListener(l: OnSystemUiVisibilityChangeListener?) {
-        //super.setOnSystemUiVisibilityChangeListener(l)
-    }
-
-    override fun setWindowInsetsAnimationCallback(callback: WindowInsetsAnimation.Callback?) {
-        //super.setWindowInsetsAnimationCallback(callback)
     }
 }
 
-//class ProxyWindowInsets(private val window_insets: WindowInsets):WindowInsets(window_insets){}
 

@@ -29,7 +29,7 @@ You might want to build the plugin yourself to set a wallpaper name and a wallpa
 ```
 ./gradlew assemble
 ```
-- Static debug and release libraries will be compiled into `addons/LiveWallpaper/bin` folder. With that, you can copy the addons folder into your Godot project folder, and enable the plugin.
+- Static debug and release libraries will be compiled into `plugin/addons/LiveWallpaper/bin` folder. With that, you can copy this addons folder into your Godot's project folder, and enable the plugin.
 
 ## Known Issues
 * Setting the app as a live wallpaper for the lock screen, home screen, or both will always set it to both in Android 14. A workaround is to set it manually from the device wallpaper settings.

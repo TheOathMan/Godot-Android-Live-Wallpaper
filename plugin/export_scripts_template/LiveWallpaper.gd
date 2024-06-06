@@ -1,9 +1,20 @@
 class_name LiveWallpaper
 extends Node
 
+# Invoked when visibility changed. visibe = true.
 signal visibility_changed(visibility:bool)
+
+# Invoked when the system window insets change, such as when the status bar,
+# navigation bar, or other system UI components become visible or hidden
 signal apply_window_insets(L:int,R:int,U:int,D:int)
+
+# Invoked by the system when the device is running low on memory and the
+# application should release resources that are not currently needed.
 signal trim_memory(level:int)
+
+# Invoked when the wallpaper receives a command, allowing it to perform specific 
+# actions based on the command type. This can include responding to user interactions or system events.
+signal on_command(action:String, pos:Vector3i, result:bool)
 
 # Start the wallpaper service
 func start_live_wallpaper_service():
@@ -42,6 +53,7 @@ func _ready():
 		_live_wallpaper_plugin.connect("VisibilityChanged",_visibility_changed)
 		_live_wallpaper_plugin.connect("TrimMemory",_trim_memory)
 		_live_wallpaper_plugin.connect("ApplyWindowInsets",_apply_window_insets)
+		_live_wallpaper_plugin.connect("OnCommand",_on_command)
 	else:
 		printerr("Failed to initialization Android live wallpaper Plugin")
 
@@ -63,6 +75,10 @@ func _trim_memory(level:TrimMemory)->void:
 func _apply_window_insets(L:int,R:int,U:int,D:int)->void:
 	apply_window_insets.emit(L,R,U,D)
 	print(L,", ",R,", ",U," ,",D)
+
+func _on_command(action:String,x:int,y:int,z:int,result:bool):
+	print("action:",action," pos:",Vector3i(x,y,z), "  result:",result)
+	on_command.emit(action,Vector3i(x,y,z),result)
 
 class dummy:
 	static func startWallpaperService():pass

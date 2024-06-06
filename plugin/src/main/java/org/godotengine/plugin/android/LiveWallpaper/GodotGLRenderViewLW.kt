@@ -122,7 +122,6 @@ open class GodotGLRenderViewLW(
 
 
     override fun onActivityResumed() {
-        Log.v("godot","onActivityResumed")
         queueEvent {
 
             // Resume the renderer
