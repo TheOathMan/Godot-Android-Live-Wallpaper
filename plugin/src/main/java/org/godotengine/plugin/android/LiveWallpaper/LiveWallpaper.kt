@@ -42,8 +42,12 @@ class LiveWallpaperService : WallpaperService() {
     var pathToSecondaryWP:String?=null
     var godotWallpaper:GodotWallpaper?=null
 
-    var liveWallpaperEngine:LiveWallpaperEngine?=null
+    var TopEngine:LiveWallpaperEngine?=null
     var SurfaceNeedsUpdate: Boolean=false
+
+    fun topEngine(){
+
+    }
 
 
     private var EngineRun:Int=0
@@ -57,7 +61,8 @@ class LiveWallpaperService : WallpaperService() {
     override fun onCreateEngine(): Engine {
         EngineRun++
         Logwp( "[Service] EngineRun:$EngineRun") //debug
-        return LiveWallpaperEngine()
+        TopEngine=LiveWallpaperEngine()
+        return TopEngine!!
     }
     override fun onDestroy() {
         Logwp("[Service] onDestroy")
@@ -97,6 +102,7 @@ class LiveWallpaperService : WallpaperService() {
             godotWallpaper?.SetSurfaceHolder(mSurfaceHolder!!)
             if(EngineRun>1){
                 godotWallpaper?.SurfaceUpdated()
+                //SurfaceNeedsUpdate=true
             }
             if(EngineRun==1) {
                 godotWallpaper?.InitRenderEngine()
@@ -117,10 +123,12 @@ class LiveWallpaperService : WallpaperService() {
                 godotWallpaper?.Pause()
             } else {
                 Logwp("[Engine$EngineRun] visible")
-                if(SurfaceNeedsUpdate) {
+                if(this !== TopEngine || SurfaceNeedsUpdate) {
                     godotWallpaper?.SetSurfaceHolder(mSurfaceHolder!!)
                     godotWallpaper?.SurfaceUpdated()
+                    Logwp("[Engine$EngineRun] Surface Updated")
                     SurfaceNeedsUpdate=false
+                    TopEngine=this
                 }
                 godotWallpaper?.Resume()
             }
@@ -266,7 +274,7 @@ class LiveWallpaper(godot: Godot): GodotPlugin(godot) {
 
     @UsedByGodot
     private fun IsPreview():Boolean{
-        return LiveWallpaperService.getInstance()?.liveWallpaperEngine?.isPreview?:false
+        return LiveWallpaperService.getInstance()?.TopEngine?.isPreview?:false
     }
 
     @UsedByGodot
