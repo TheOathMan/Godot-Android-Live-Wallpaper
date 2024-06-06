@@ -53,8 +53,8 @@ class LiveWallpaperService : WallpaperService() {
         godotWallpaper = GodotWallpaper(applicationContext)
     }
     override fun onCreateEngine(): Engine {
-        Logwp( "[Service] EngineRun:$EngineRun") //debug
         EngineRun++
+        Logwp( "[Service] EngineRun:$EngineRun") //debug
         return LiveWallpaperEngine()
     }
     override fun onDestroy() {
@@ -77,7 +77,7 @@ class LiveWallpaperService : WallpaperService() {
 
     inner class LiveWallpaperEngine : Engine(){
 
-        var Visible: Boolean=false
+        var Surface: Boolean=false
         var mSurfaceHolder: SurfaceHolder?=null
         override fun onCreate(surfaceHolder: SurfaceHolder) {
             Logwp("[Engine$EngineRun] onCreate")
@@ -106,21 +106,19 @@ class LiveWallpaperService : WallpaperService() {
 
         override fun onSurfaceChanged(surfaceHolder: SurfaceHolder, format: Int, width: Int, height: Int) {
             super.onSurfaceChanged(surfaceHolder, format, width, height)
+            mSurfaceHolder = surfaceHolder
             Logwp("[Engine$EngineRun] onSurfaceChanged")
         }
 
         override fun onVisibilityChanged(visible: Boolean) {
-            Visible=visible
             godotWallpaper?.wpPlugin?.EmitVisibilityChanged(visible)
             if (!visible) {
                 Logwp("[Engine$EngineRun] not visible")
                 godotWallpaper?.Pause()
             } else {
                 Logwp("[Engine$EngineRun] visible")
-                if (godotWallpaper?.godotGLRenderViewLW?.view?.holder!=mSurfaceHolder) {
-                    godotWallpaper?.SetSurfaceHolder(mSurfaceHolder!!)
-                    godotWallpaper?.SurfaceUpdated()
-                }
+                godotWallpaper?.SetSurfaceHolder(mSurfaceHolder!!)
+                godotWallpaper?.SurfaceUpdated()
                 godotWallpaper?.Resume()
             }
         }

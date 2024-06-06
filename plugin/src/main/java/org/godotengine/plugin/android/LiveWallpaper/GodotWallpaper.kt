@@ -30,7 +30,7 @@ class GodotWallpaper(private val context: Context) : GodotHost {
     var godotGLRenderViewLW:GodotGLRenderViewLW?=null
     var wpPlugin:LiveWallpaper?=null
     private var mSurfaceHolder: SurfaceHolder?=null
-    protected var view: SurfaceHolder.Callback2? = null
+    private var view: SurfaceHolder.Callback2? = null
 
     private val lock = Any()
 
