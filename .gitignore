@@ -34,6 +34,7 @@ google-services.json
 
 *.import
 *.aar
+*.zip
 
 #*
 #!.gitignore

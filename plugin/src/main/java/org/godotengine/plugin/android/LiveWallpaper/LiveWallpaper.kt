@@ -43,6 +43,8 @@ class LiveWallpaperService : WallpaperService() {
     var godotWallpaper:GodotWallpaper?=null
 
     var liveWallpaperEngine:LiveWallpaperEngine?=null
+    var SurfaceNeedsUpdate: Boolean=false
+
 
     private var EngineRun:Int=0
 
@@ -77,7 +79,6 @@ class LiveWallpaperService : WallpaperService() {
 
     inner class LiveWallpaperEngine : Engine(){
 
-        var Surface: Boolean=false
         var mSurfaceHolder: SurfaceHolder?=null
         override fun onCreate(surfaceHolder: SurfaceHolder) {
             Logwp("[Engine$EngineRun] onCreate")
@@ -92,15 +93,14 @@ class LiveWallpaperService : WallpaperService() {
             Logwp("[Engine$EngineRun] onSurfaceCreated")
             super.onSurfaceCreated(surfaceHolder)
             mSurfaceHolder = surfaceHolder
-            godotWallpaper?.SetSurfaceHolder(mSurfaceHolder!!)
 
+            godotWallpaper?.SetSurfaceHolder(mSurfaceHolder!!)
+            if(EngineRun>1){
+                godotWallpaper?.SurfaceUpdated()
+            }
             if(EngineRun==1) {
                 godotWallpaper?.InitRenderEngine()
                 godotWallpaper?.InitPlugins()
-            }
-
-            if(EngineRun>1){
-                godotWallpaper?.SurfaceUpdated()
             }
         }
 
@@ -117,8 +117,11 @@ class LiveWallpaperService : WallpaperService() {
                 godotWallpaper?.Pause()
             } else {
                 Logwp("[Engine$EngineRun] visible")
-                godotWallpaper?.SetSurfaceHolder(mSurfaceHolder!!)
-                godotWallpaper?.SurfaceUpdated()
+                if(SurfaceNeedsUpdate) {
+                    godotWallpaper?.SetSurfaceHolder(mSurfaceHolder!!)
+                    godotWallpaper?.SurfaceUpdated()
+                    SurfaceNeedsUpdate=false
+                }
                 godotWallpaper?.Resume()
             }
         }
@@ -163,6 +166,7 @@ class LiveWallpaperService : WallpaperService() {
         }
 
         override fun onSurfaceDestroyed(surfaceHolder: SurfaceHolder) {
+            SurfaceNeedsUpdate=true
             Logwp("[Engine$EngineRun] onSurfaceDestroyed")
             if (EngineRun==1) {
                 godotWallpaper?.Destroy()
