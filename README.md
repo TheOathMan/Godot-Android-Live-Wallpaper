@@ -2,7 +2,9 @@
   <img src="pictures/wp1.png" alt="wp1" width="300" style="margin-right: 20px;" />
   <img src="pictures/wp2.png" alt="wp2" width="300" />
 </p>
-
+<p align="center" style="color: #888888; font-size: small;">
+  The Moon Application (<a href="https://play.google.com/store/apps/details?id=com.oproject.themoon" style="color: #888888;">Android</a>, <a href="https://apps.apple.com/app/the-moon-simulation/id6526486262" style="color: #888888;">iOS</a>)
+</p>
 
 
 # Godot Android Live Wallpaper

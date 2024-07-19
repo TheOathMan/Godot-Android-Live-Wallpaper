@@ -16,11 +16,15 @@ signal trim_memory(level:int)
 # actions based on the command type. This can include responding to user interactions or system events.
 signal on_command(action:String, pos:Vector3i, result:bool)
 
-# Start the wallpaper service
+# Start the live wallpaper service.
 func start_live_wallpaper_service():
 	get_plugin().startWallpaperService()
 
-# IS this wallpaper service process running as a preview ?
+# Return true if this process is running as a live wallpaper service.
+func is_live_wallpaper()->bool:
+	return get_plugin().IsLiveWallpaper()
+
+# Return true if this process is running as a preview live wallpaper. 
 func is_preview()-> bool:
 	return get_plugin().IsPreview()
 
@@ -28,13 +32,9 @@ func is_preview()-> bool:
 func is_wallpaper_in_use()->bool:
 	return get_plugin().isLiveWallpaperInUse()
 
-# Reset wallpaper to the system defult 
+# Reset the device wallpaper to the system's defult.
 func reset_to_default_Wallpaper()->void:
 	get_plugin().ResetToDefaultWallpaper()
-
-# return true if this app is running as a live wallpaper service.
-func is_live_wallpaper()->bool:
-	return get_plugin().IsLiveWallpaper()
 
 
 enum TrimMemory {
@@ -54,6 +54,16 @@ func _ready():
 		_live_wallpaper_plugin.connect("TrimMemory",_trim_memory)
 		_live_wallpaper_plugin.connect("ApplyWindowInsets",_apply_window_insets)
 		_live_wallpaper_plugin.connect("OnCommand",_on_command)
+		
+		# Optional but importent. pause all process related tasks when wallpaper isn't visible.
+		# Note that this won't work with node that has it's Process mode set to 'WhenPaused' or 'Always' 
+		# Render Pause/Resume is handled by the plugin an will always be paused when wallpaper not visible.
+		visibility_changed.connect(func (visible:bool):
+			if visible: 
+				get_tree().paused=false
+			else:
+				get_tree().paused=true
+				)
 	else:
 		printerr("Failed to initialization Android live wallpaper Plugin")
 
