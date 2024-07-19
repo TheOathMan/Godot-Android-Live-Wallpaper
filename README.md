@@ -1,7 +1,8 @@
 <p align="center">
-  <img src="pictures/wp1.png" alt="wp1" style="margin-right: 20px;" />
-  <img src="pictures/wp2.png" alt="wp2" />
+  <img src="pictures/wp1.png" alt="wp1" width="300" style="margin-right: 20px;" />
+  <img src="pictures/wp2.png" alt="wp2" width="300" />
 </p>
+
 
 
 # Godot Android Live Wallpaper
