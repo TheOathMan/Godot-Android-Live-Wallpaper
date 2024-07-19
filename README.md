@@ -42,7 +42,7 @@ You might want to build the plugin yourself to set a wallpaper name and a wallpa
 
 ## Known Issues
 * Setting the app as a live wallpaper for the lock screen, home screen, or both will always set it to both in Android 14. A workaround is to set it manually from the device wallpaper settings.
-* As of Godot v4.3.beta.custom_build [f135f729b], the plugin fails to produce multiple instances of the live wallpaper. Works fine with Godot version v4.3.dev.custom_build [9b94c80e9] or bellow unitl 4.2.2.stable. Bellow 4.2.2.stable, is untested territory.
+* As of Godot v4.3.beta.custom_build ['f135f729b'](https://github.com/godotengine/godot/tree/f135f729b91e61e6844159a535a7474335ec8d52), the plugin fails to produce multiple instances of the live wallpaper. The error isn't explosive as there's no crashs, but the app will produce black screen everytime the system attempts to produce new WP surfaces. A workaround is to stick with Godot version 4.2.2.stable or v4.3.dev.custom_build ['9b94c80e9'](https://github.com/godotengine/godot/tree/9b94c80e9aff2a4f363ae6d8e2bbe837aa5876bc), other versions are in an untested territory.
 
 ## Important Considerations:
 
