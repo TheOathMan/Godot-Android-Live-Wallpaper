@@ -16,5 +16,5 @@ dependencyResolutionManagement {
 }
 
 // TODO: Update project's name.
-rootProject.name = "NativeLocation"
+rootProject.name = "LiveWallpaper"
 include(":plugin")

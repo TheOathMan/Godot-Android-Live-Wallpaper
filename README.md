@@ -1,3 +1,9 @@
+<p align="center">
+  <img src="pictures/wp1.png" alt="wp1" style="margin-right: 20px;" />
+  <img src="pictures/wp2.png" alt="wp2" />
+</p>
+
+
 # Godot Android Live Wallpaper
 Make your Godot Android application run in the background as a live wallpaper. To download the release, ready to use plugin files go to the [`Release`](https://github.com/TheOathMan/Godot-Android-Live-Wallpaper/releases) section. To learn more about Godot Android Live Wallpaper, read more. 
 

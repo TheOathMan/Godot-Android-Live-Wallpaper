@@ -60,6 +60,7 @@ class GodotWallpaper(private val context: Context) : GodotHost {
             renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
         }
         mGodot.renderView = godotGLRenderViewLW
+        InitPlugins()
     }
 
     fun SurfaceUpdated(){

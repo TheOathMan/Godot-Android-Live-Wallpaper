@@ -11,7 +11,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.service.wallpaper.WallpaperService
-import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.View
@@ -39,15 +38,9 @@ class LiveWallpaperService : WallpaperService() {
         var windowInsets:WindowInsets?=null
     }
 
-    var pathToSecondaryWP:String?=null
-    var godotWallpaper:GodotWallpaper?=null
-
+    private var mSurfaceNeedsUpdate: Boolean=false
+    private var mGodotWallpaper:GodotWallpaper?=null
     var TopEngine:LiveWallpaperEngine?=null
-    var SurfaceNeedsUpdate: Boolean=false
-
-    fun topEngine(){
-
-    }
 
 
     private var EngineRun:Int=0
@@ -56,7 +49,7 @@ class LiveWallpaperService : WallpaperService() {
         Logwp("[Service] onCreate")
         super.onCreate()
         initialize(this)
-        godotWallpaper = GodotWallpaper(applicationContext)
+        mGodotWallpaper = GodotWallpaper(applicationContext)
     }
     override fun onCreateEngine(): Engine {
         EngineRun++
@@ -66,7 +59,7 @@ class LiveWallpaperService : WallpaperService() {
     }
     override fun onDestroy() {
         Logwp("[Service] onDestroy")
-        godotWallpaper?.terminateGodotLiveWallpaperService()
+        mGodotWallpaper?.terminateGodotLiveWallpaperService()
         super.onDestroy()
     }
     override fun onTrimMemory(level: Int) {
@@ -79,7 +72,7 @@ class LiveWallpaperService : WallpaperService() {
          #  TRIM_MEMORY_RUNNING_CRITICAL: System is in a critical memory state and might even terminate foreground processes.
          */
 
-        godotWallpaper?.wpPlugin?.EmitMemoryTrim(level)
+        mGodotWallpaper?.wpPlugin?.EmitMemoryTrim(level)
     }
 
     inner class LiveWallpaperEngine : Engine(){
@@ -89,8 +82,8 @@ class LiveWallpaperService : WallpaperService() {
             Logwp("[Engine$EngineRun] onCreate")
             super.onCreate(surfaceHolder)
             if(EngineRun==1) {
-                godotWallpaper?.onCreate()
-                godotWallpaper?.InitNativeEngine()
+                mGodotWallpaper?.onCreate()
+                mGodotWallpaper?.InitNativeEngine()
             }
         }
 
@@ -98,39 +91,36 @@ class LiveWallpaperService : WallpaperService() {
             Logwp("[Engine$EngineRun] onSurfaceCreated")
             super.onSurfaceCreated(surfaceHolder)
             mSurfaceHolder = surfaceHolder
-
-            godotWallpaper?.SetSurfaceHolder(mSurfaceHolder!!)
-            if(EngineRun>1){
-                godotWallpaper?.SurfaceUpdated()
-                //SurfaceNeedsUpdate=true
-            }
+            mGodotWallpaper?.SetSurfaceHolder(mSurfaceHolder!!)
             if(EngineRun==1) {
-                godotWallpaper?.InitRenderEngine()
-                godotWallpaper?.InitPlugins()
+                mGodotWallpaper?.InitRenderEngine()
+                return
             }
+            mGodotWallpaper?.SurfaceUpdated()
         }
 
         override fun onSurfaceChanged(surfaceHolder: SurfaceHolder, format: Int, width: Int, height: Int) {
             super.onSurfaceChanged(surfaceHolder, format, width, height)
             mSurfaceHolder = surfaceHolder
+            mGodotWallpaper?.SurfaceUpdated()
             Logwp("[Engine$EngineRun] onSurfaceChanged")
         }
 
         override fun onVisibilityChanged(visible: Boolean) {
-            godotWallpaper?.wpPlugin?.EmitVisibilityChanged(visible)
+            mGodotWallpaper?.wpPlugin?.EmitVisibilityChanged(visible)
             if (!visible) {
                 Logwp("[Engine$EngineRun] not visible")
-                godotWallpaper?.Pause()
+                mGodotWallpaper?.Pause()
             } else {
                 Logwp("[Engine$EngineRun] visible")
-                if(this !== TopEngine || SurfaceNeedsUpdate) {
-                    godotWallpaper?.SetSurfaceHolder(mSurfaceHolder!!)
-                    godotWallpaper?.SurfaceUpdated()
+                if(this !== TopEngine || mSurfaceNeedsUpdate) {
                     Logwp("[Engine$EngineRun] Surface Updated")
-                    SurfaceNeedsUpdate=false
+                    mGodotWallpaper?.SetSurfaceHolder(mSurfaceHolder!!)
+                    mGodotWallpaper?.SurfaceUpdated()
+                    mSurfaceNeedsUpdate=false
                     TopEngine=this
                 }
-                godotWallpaper?.Resume()
+                mGodotWallpaper?.Resume()
             }
         }
 
@@ -147,7 +137,7 @@ class LiveWallpaperService : WallpaperService() {
                 } else {
                     arrayOf(it.systemWindowInsetTop, it.systemWindowInsetBottom, it.systemWindowInsetLeft, it.systemWindowInsetRight)
                 }
-                godotWallpaper?.wpPlugin?.EmitInsetSignal(left,right,top,bottom)
+                mGodotWallpaper?.wpPlugin?.EmitInsetSignal(left,right,top,bottom)
             }
 
             super.onApplyWindowInsets(insets)
@@ -157,7 +147,7 @@ class LiveWallpaperService : WallpaperService() {
         override fun onTouchEvent(event: MotionEvent?) {
             super.onTouchEvent(event)
             if (event != null) {
-                godotWallpaper?.onTouchEvent(event)
+                mGodotWallpaper?.onTouchEvent(event)
             }
         }
 
@@ -169,15 +159,15 @@ class LiveWallpaperService : WallpaperService() {
             extras: Bundle?,
             resultRequested: Boolean
         ): Bundle {
-            godotWallpaper?.wpPlugin?.EmitOnCommand(action?:"null",x,y,z,resultRequested)
+            mGodotWallpaper?.wpPlugin?.EmitOnCommand(action?:"null",x,y,z,resultRequested)
             return Bundle()
         }
 
         override fun onSurfaceDestroyed(surfaceHolder: SurfaceHolder) {
-            SurfaceNeedsUpdate=true
+            mSurfaceNeedsUpdate=true
             Logwp("[Engine$EngineRun] onSurfaceDestroyed")
             if (EngineRun==1) {
-                godotWallpaper?.Destroy()
+                mGodotWallpaper?.Destroy()
             }
             super.onSurfaceDestroyed(surfaceHolder)
         }
@@ -296,10 +286,6 @@ class LiveWallpaper(godot: Godot): GodotPlugin(godot) {
         return LiveWallpaperService.getInstance() != null
     }
 
-    @UsedByGodot
-    fun SetSecondWallpaperImage(filepath:String){
-        LiveWallpaperService.getInstance()?.pathToSecondaryWP=filepath
-    }
 
     fun EmitInsetSignal(L:Int,R:Int,U:Int,D:Int){
         emitSignal("ApplyWindowInsets",L,R,U,D)

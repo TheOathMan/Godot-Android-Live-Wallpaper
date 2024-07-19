@@ -151,10 +151,13 @@ class ProxyActivity(private val serviceContext: Context) : Activity() {
 
 class ProxyWindow(context: Context?) : Window(context){
 
-    override fun addFlags(flags: Int) {
-
+    //TODO: maybe omit window flags function?
+//    override fun addFlags(flags: Int) {
+//        //No window flags
+//    }
+    override fun getDecorView(): View {
+        return ProxyView(context)
     }
-
     override fun takeSurface(p0: SurfaceHolder.Callback2?) {
         TODO("Not yet needed")
     }
@@ -281,11 +284,6 @@ class ProxyWindow(context: Context?) : Window(context){
 
     override fun superDispatchGenericMotionEvent(p0: MotionEvent?): Boolean {
         TODO("Not yet needed")
-    }
-
-    override fun getDecorView(): View {
-        //TODO("Not yet needed")
-        return ProxyView(context)
     }
 
     override fun peekDecorView(): View {

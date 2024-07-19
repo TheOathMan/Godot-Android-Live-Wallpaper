@@ -95,11 +95,6 @@ open class GodotGLRenderViewLW(
     private val godotRenderer: GodotRenderer = GodotRenderer()
     private val customPointerIcons = SparseArray<PointerIcon>()
 
-//    override fun getHolder(): SurfaceHolder {
-//        //return super.getHolder()
-//        return surfaceHolder
-//    }
-
     override fun getView(): SurfaceView {
         return this
     }

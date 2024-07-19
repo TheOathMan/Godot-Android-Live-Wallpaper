@@ -74,7 +74,6 @@ func _trim_memory(level:TrimMemory)->void:
 
 func _apply_window_insets(L:int,R:int,U:int,D:int)->void:
 	apply_window_insets.emit(L,R,U,D)
-	print(L,", ",R,", ",U," ,",D)
 
 func _on_command(action:String,x:int,y:int,z:int,result:bool):
 	print("action:",action," pos:",Vector3i(x,y,z), "  result:",result)
