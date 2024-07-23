@@ -38,7 +38,7 @@ You might want to build the plugin yourself to set wallpaper name and preview pi
 ```
 compile "Wallpaper Name" "path/to/your/thumbnail.png"
 ```
-- Make sure the thumbnail is in PNG format and its filename contains only lowercase letters with no spaces.
+- Make sure the thumbnail is in PNG format and its filename contains only lowercase letters with no spaces or numbers.
 
 - If everything goes as expected, static debug and release libraries will be compiled into the `plugin/addons/LiveWallpaper/bin` folder. After that, copy this `addons` folder into your Godot project folder, and enable the plugin.
 
