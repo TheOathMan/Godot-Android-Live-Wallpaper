@@ -18,6 +18,9 @@ import org.godotengine.godot.GodotLib
 import org.godotengine.godot.gl.GLSurfaceView
 import org.godotengine.godot.plugin.GodotPluginRegistry
 import org.godotengine.godot.xr.XRMode
+import java.lang.reflect.Field
+import java.lang.reflect.InvocationTargetException
+import java.lang.reflect.Method
 
 fun Logwp(msg:String){
     Log.v("godotwp",msg)
@@ -33,6 +36,7 @@ class GodotWallpaper(private val context: Context) : GodotHost {
     private var view: SurfaceHolder.Callback2? = null
 
     private val lock = Any()
+
 
     fun onCreate(){
         mGodot.onCreate(this)
@@ -61,13 +65,14 @@ class GodotWallpaper(private val context: Context) : GodotHost {
         }
         mGodot.renderView = godotGLRenderViewLW
         InitPlugins()
+        view = godotGLRenderViewLW?.view as SurfaceHolder.Callback2
     }
 
     fun SurfaceUpdated(){
-        view = godotGLRenderViewLW?.view as SurfaceHolder.Callback2
+        //Logwp(CallReflection("mWaitingForSurface").toString())
+        Logwp("Surface Updated")
         view?.surfaceDestroyed(mSurfaceHolder!!)
         view?.surfaceCreated(mSurfaceHolder!!)
-
         godotGLRenderViewLW?.requestRender()
     }
 
@@ -104,7 +109,8 @@ class GodotWallpaper(private val context: Context) : GodotHost {
             Pause()
             GodotLib.ondestroy()
             godotGLRenderViewLW?.preserveEGLContextOnPause=false
-            godotGLRenderViewLW?.onPause()
+            godotGLRenderViewLW?.onActivityStopped()
+
         }
     }
 

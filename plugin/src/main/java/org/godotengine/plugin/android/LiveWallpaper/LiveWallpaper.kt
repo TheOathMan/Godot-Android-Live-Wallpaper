@@ -11,6 +11,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.service.wallpaper.WallpaperService
+import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.View
@@ -21,19 +22,15 @@ import org.godotengine.godot.Godot
 import org.godotengine.godot.plugin.GodotPlugin
 import org.godotengine.godot.plugin.SignalInfo
 import org.godotengine.godot.plugin.UsedByGodot
+import javax.microedition.khronos.opengles.GL10
+
+
 
 class LiveWallpaperService : WallpaperService() {
     companion object {
         private var instance: LiveWallpaperService? = null
-
         fun getInstance(): LiveWallpaperService? {
             return instance
-        }
-
-        fun initialize(liveWallpaperService: LiveWallpaperService) {
-            if (instance == null) {
-                instance = liveWallpaperService
-            }
         }
         var windowInsets:WindowInsets?=null
     }
@@ -48,7 +45,9 @@ class LiveWallpaperService : WallpaperService() {
     override fun onCreate() {
         Logwp("[Service] onCreate")
         super.onCreate()
-        initialize(this)
+        if (instance == null) {
+            instance = this
+        }
         mGodotWallpaper = GodotWallpaper(applicationContext)
     }
     override fun onCreateEngine(): Engine {
@@ -106,23 +105,37 @@ class LiveWallpaperService : WallpaperService() {
             Logwp("[Engine$EngineRun] onSurfaceChanged")
         }
 
+        override fun onSurfaceDestroyed(surfaceHolder: SurfaceHolder) {
+            super.onSurfaceDestroyed(surfaceHolder)
+            mSurfaceNeedsUpdate=true
+            Logwp("[Engine$EngineRun] onSurfaceDestroyed")
+            if (EngineRun==1) {
+                mGodotWallpaper?.Destroy()
+            }
+        }
+
         override fun onVisibilityChanged(visible: Boolean) {
-            mGodotWallpaper?.wpPlugin?.EmitVisibilityChanged(visible)
-            if (!visible) {
-                Logwp("[Engine$EngineRun] not visible")
-                mGodotWallpaper?.Pause()
-            } else {
+            if (visible) {
                 Logwp("[Engine$EngineRun] visible")
                 if(this !== TopEngine || mSurfaceNeedsUpdate) {
-                    Logwp("[Engine$EngineRun] Surface Updated")
                     mGodotWallpaper?.SetSurfaceHolder(mSurfaceHolder!!)
                     mGodotWallpaper?.SurfaceUpdated()
                     mSurfaceNeedsUpdate=false
                     TopEngine=this
                 }
                 mGodotWallpaper?.Resume()
+            }else{
+                Logwp("[Engine$EngineRun] not visible")
+                mGodotWallpaper?.Pause()
             }
+
+            // only send visibility signals when this is top engine. This is to avoid sending mixed signals
+            if(this === TopEngine)
+                mGodotWallpaper?.wpPlugin?.EmitVisibilityChanged(visible)
+
         }
+
+
 
         override fun onApplyWindowInsets(insets: WindowInsets?) {
             //TODO: is all devices call this function at startup? because we need a WindowInsets with
@@ -150,7 +163,6 @@ class LiveWallpaperService : WallpaperService() {
                 mGodotWallpaper?.onTouchEvent(event)
             }
         }
-
         override fun onCommand(
             action: String?,
             x: Int,
@@ -161,15 +173,6 @@ class LiveWallpaperService : WallpaperService() {
         ): Bundle {
             mGodotWallpaper?.wpPlugin?.EmitOnCommand(action?:"null",x,y,z,resultRequested)
             return Bundle()
-        }
-
-        override fun onSurfaceDestroyed(surfaceHolder: SurfaceHolder) {
-            mSurfaceNeedsUpdate=true
-            Logwp("[Engine$EngineRun] onSurfaceDestroyed")
-            if (EngineRun==1) {
-                mGodotWallpaper?.Destroy()
-            }
-            super.onSurfaceDestroyed(surfaceHolder)
         }
 
         override fun onDestroy() {
@@ -183,6 +186,11 @@ class LiveWallpaperService : WallpaperService() {
 
 
 class LiveWallpaper(godot: Godot): GodotPlugin(godot) {
+
+    override fun onGLDrawFrame(gl: GL10?) {
+        super.onGLDrawFrame(gl)
+        //Logwp("[Plugin] onGLDrawFrame")
+    }
     override fun getPluginName() = "LiveWallpaper"
 
     override fun getPluginSignals(): Set<SignalInfo> {
@@ -196,36 +204,31 @@ class LiveWallpaper(godot: Godot): GodotPlugin(godot) {
     }
 
     override fun onMainCreate(activity: Activity?): View? {
-        Logwp("[Plugin] onMainCreate")
+        //Logwp("[Plugin] onMainCreate")
         return super.onMainCreate(activity)
     }
 
     override fun onMainDestroy() {
-        Logwp("[Plugin] onMainDestroy")
+        //Logwp("[Plugin] onMainDestroy")
         super.onMainDestroy()
     }
 
     @TargetApi(Build.VERSION_CODES.N)
     override fun onMainResume() {
+        //Logwp("[Plugin] onMainResume")
         super.onMainResume()
     }
 
     override fun onMainPause() {
+        //Logwp("[Plugin] onMainPause")
         super.onMainPause()
     }
 
     @UsedByGodot
-    private fun startWallpaperService() {
+    private fun startWallpaperService(): Int {
         activity?.let { context ->
             if (!context.packageManager.hasSystemFeature(PackageManager.FEATURE_LIVE_WALLPAPER)) {
-                runOnUiThread {
-                    Toast.makeText(
-                        context,
-                        "Live Wallpaper is not supported by this device",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-                return
+                return 0
             }
 
             // TODO[Optional]: show wallpaper CHOOSER if the wallpaper is already in use.
@@ -247,9 +250,8 @@ class LiveWallpaper(godot: Godot): GodotPlugin(godot) {
             }
             context.startActivity(intent)
         }
+        return 1
     }
-
-
 
     @UsedByGodot
     fun isLiveWallpaperInUse(): Boolean {

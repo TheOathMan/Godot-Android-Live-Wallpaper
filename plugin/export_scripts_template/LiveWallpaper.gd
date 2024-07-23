@@ -16,9 +16,9 @@ signal trim_memory(level:int)
 # actions based on the command type. This can include responding to user interactions or system events.
 signal on_command(action:String, pos:Vector3i, result:bool)
 
-# Start the live wallpaper service.
-func start_live_wallpaper_service():
-	get_plugin().startWallpaperService()
+# Start the live wallpaper service. return 0 if the device doesn't support live wallpaper service
+func start_live_wallpaper_service()->int:
+	return get_plugin().startWallpaperService()
 
 # Return true if this process is running as a live wallpaper service.
 func is_live_wallpaper()->bool:
@@ -59,6 +59,7 @@ func _ready():
 		# Note that this won't work with node that has it's Process mode set to 'WhenPaused' or 'Always' 
 		# Render Pause/Resume is handled by the plugin an will always be paused when wallpaper not visible.
 		visibility_changed.connect(func (visible:bool):
+			print("visiblity from gd:%s"%str(visible))
 			if visible: 
 				get_tree().paused=false
 			else:
@@ -90,9 +91,8 @@ func _on_command(action:String,x:int,y:int,z:int,result:bool):
 	on_command.emit(action,Vector3i(x,y,z),result)
 
 class dummy:
-	static func startWallpaperService():pass
+	static func startWallpaperService()->int:return 0 
 	static func IsPreview()-> bool:return false
 	static func isLiveWallpaperInUse()->bool:return false
 	static func ResetToDefaultWallpaper()->void:pass
 	static func IsLiveWallpaper()->bool:return false
-

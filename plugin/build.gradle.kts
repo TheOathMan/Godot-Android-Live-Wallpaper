@@ -1,4 +1,6 @@
 import com.android.build.gradle.internal.tasks.factory.dependsOn
+import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
+import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.include
 
 plugins {
     id("com.android.library")
@@ -34,10 +36,15 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
 }
 
 dependencies {
     implementation("org.godotengine:godot:4.2.0.stable")
+    // Include only headers/interfaces for compile
+   // compileOnly(fileTree(mapOf("dir" to "C:/Development/Projects/open source/Godot Engine 4.3.beta3.dev/godot/platform/android/java/lib/src/", "include" to listOf("**/*.java", "**/*.kt"))))
+    // Or specify jars/libraries that provide the necessary headers
+    //implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 }
 
 // BUILD TASKS DEFINITION

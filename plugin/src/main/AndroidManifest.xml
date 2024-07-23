@@ -11,7 +11,7 @@
         <service
             android:name=".LiveWallpaperService"
             android:enabled="true"
-            android:label="Godot Live Wallpaper"
+            android:label="@string/wallpaper_description"
             android:permission="android.permission.BIND_WALLPAPER"
             android:exported="true"
             android:process="${applicationId}.wallpaper">

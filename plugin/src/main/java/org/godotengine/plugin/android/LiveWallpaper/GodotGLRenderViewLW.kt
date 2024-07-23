@@ -30,36 +30,31 @@
 
 package org.godotengine.plugin.android.LiveWallpaper
 
+//import androidx.annotation.Keep
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.PixelFormat
 import android.os.Build
-import android.os.Handler
 import android.text.TextUtils
-import android.util.Log
 import android.util.SparseArray
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.PointerIcon
-import android.view.SurfaceHolder
 import android.view.SurfaceView
-//import androidx.annotation.Keep
 import org.godotengine.godot.Godot
 import org.godotengine.godot.GodotHost
 import org.godotengine.godot.GodotLib
 import org.godotengine.godot.GodotRenderView
-import org.godotengine.godot.gl.GLSurfaceView
-import org.godotengine.godot.gl.GodotRenderer
+//import android.opengl.GLSurfaceView
+//import org.godotengine.godot.gl.GLSurfaceView
+//import org.godotengine.godot.gl.GodotRenderer
 import org.godotengine.godot.input.GodotInputHandler
 import org.godotengine.godot.xr.XRMode
-import org.godotengine.godot.xr.ovr.OvrConfigChooser
-import org.godotengine.godot.xr.ovr.OvrContextFactory
-import org.godotengine.godot.xr.ovr.OvrWindowSurfaceFactory
-import org.godotengine.godot.xr.regular.RegularConfigChooser
-import org.godotengine.godot.xr.regular.RegularContextFactory
-import org.godotengine.godot.xr.regular.RegularFallbackConfigChooser
+import org.godotengine.plugin.android.LiveWallpaper.gl.GLSurfaceViewWP
+import org.godotengine.plugin.android.LiveWallpaper.gl.GodotRenderer
+import java.lang.reflect.InvocationTargetException
+import java.lang.reflect.Method
 
 /**
  * A simple GLSurfaceView sub-class that demonstrate how to perform
@@ -79,6 +74,9 @@ import org.godotengine.godot.xr.regular.RegularFallbackConfigChooser
  * that matches it exactly (with regards to red/green/blue/alpha channels
  * bit depths). Failure to do so would result in an EGL_BAD_MATCH error.
  */
+
+
+
 @SuppressLint("ViewConstructor")
 open class GodotGLRenderViewLW(
     private val context:Context,
@@ -89,10 +87,11 @@ open class GodotGLRenderViewLW(
     private val useDebugOpengl: Boolean=false//,
     //private var surfaceHolder:SurfaceHolder
 ) :
-    GLSurfaceView(context), GodotRenderView {
+    GLSurfaceViewWP(context), GodotRenderView {
 
     private val inputHandler: GodotInputHandler = GodotInputHandler(this)
-    private val godotRenderer: GodotRenderer = GodotRenderer()
+    private val godotRenderer: GodotRenderer =
+        GodotRenderer()
     private val customPointerIcons = SparseArray<PointerIcon>()
 
     override fun getView(): SurfaceView {
@@ -115,6 +114,13 @@ open class GodotGLRenderViewLW(
         }
     }
 
+    fun onActivityStopped() {
+        pauseGLThread()
+    }
+
+    fun onActivityStarted() {
+        resumeGLThread()
+    }
 
     override fun onActivityResumed() {
         queueEvent {
@@ -124,6 +130,8 @@ open class GodotGLRenderViewLW(
             GodotLib.focusin()
         }
     }
+
+
 
     override fun onBackPressed() {
         godot.onBackPressed(host)
@@ -230,57 +238,7 @@ open class GodotGLRenderViewLW(
     fun PreRender() {
         preserveEGLContextOnPause = true
         isFocusableInTouchMode = false
-        when (xrMode) {
-            XRMode.OPENXR -> {
-                // Replace the default egl config chooser.
-                setEGLConfigChooser(OvrConfigChooser())
 
-                // Replace the default context factory.
-                setEGLContextFactory(OvrContextFactory())
-
-                // Replace the default window surface factory.
-                setEGLWindowSurfaceFactory(OvrWindowSurfaceFactory())
-            }
-
-            XRMode.REGULAR -> {
-                /* By default, GLSurfaceView() creates a RGB_565 opaque surface.
-				 * If we want a translucent one, we should change the surface's
-				 * format here, using PixelFormat.TRANSLUCENT for GL Surfaces
-				 * is interpreted as any 32-bit surface with alpha by SurfaceFlinger.
-				 */
-                if (translucent) {
-                    this.holder.setFormat(PixelFormat.TRANSLUCENT)
-                }
-
-                /* Setup the context factory for 2.0 rendering.
-				 * See ContextFactory class definition below
-				 */setEGLContextFactory(RegularContextFactory(useDebugOpengl))
-
-                /* We need to choose an EGLConfig that matches the format of
-				 * our surface exactly. This is going to be done in our
-				 * custom config chooser. See ConfigChooser class definition
-				 * below.
-				 */setEGLConfigChooser(
-                    RegularFallbackConfigChooser(
-                        8, 8, 8, 8, 24, 0,
-                        RegularConfigChooser(8, 8, 8, 8, 16, 0)
-                    )
-                )
-            }
-
-            else -> {
-                if (translucent) {
-                    this.holder.setFormat(PixelFormat.TRANSLUCENT)
-                }
-                setEGLContextFactory(RegularContextFactory(useDebugOpengl))
-                setEGLConfigChooser(
-                    RegularFallbackConfigChooser(
-                        8, 8, 8, 8, 24, 0,
-                        RegularConfigChooser(8, 8, 8, 8, 16, 0)
-                    )
-                )
-            }
-        }
     }
 
     override fun startRenderer() {

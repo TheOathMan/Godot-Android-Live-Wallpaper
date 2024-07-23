@@ -32,18 +32,18 @@ $LiveWallpaper.visibility_changed.connect(is_user_viewing_my_wallpaper)
 ```
 
 ## Building the plugin
-You might want to build the plugin yourself to set a wallpaper name and a wallpaper preview picture. To build the plugin:
+You might want to build the plugin yourself to set wallpaper name and preview picture. To build the plugin:
 
 - Open the terminal in the project's root directory, and run this command:
 ```
-./gradlew assemble
+compile "Wallpaper Name" "path/to/your/thumbnail.png"
 ```
-- Static debug and release libraries will be compiled into `plugin/addons/LiveWallpaper/bin` folder. With that, you can copy this addons folder into your Godot's project folder, and enable the plugin.
+- Make sure the thumbnail is in PNG format and its filename contains only lowercase letters with no spaces.
+
+- If everything goes as expected, static debug and release libraries will be compiled into the `plugin/addons/LiveWallpaper/bin` folder. After that, copy this `addons` folder into your Godot project folder, and enable the plugin.
 
 ## Known Issues
 * Setting the app as a live wallpaper for the lock screen, home screen, or both will always set it to both in Android 14. A workaround is to set it manually from the device wallpaper settings.
-
-* Commit made to ['GLSurfaceView.java'](https://github.com/godotengine/godot/pull/93933/files#diff-75786620d2b8375c0f1dbb44fb343f883b8683172004d98d272efa549abefb59) in Godot 4.3.beta3, causes the wallpaper process to fail at creating multiple instances of the live wallpaper (in case of wallpaper preview). The error isn't explosive as there's no hard crashes, but the app will produce black screen every time wallpaper process attempts to create secondary WP surfaces. A workaround is to stick with Godot version 4.2.2.stable or v4.3.beta2.official.
 
 ## Important Considerations:
 
