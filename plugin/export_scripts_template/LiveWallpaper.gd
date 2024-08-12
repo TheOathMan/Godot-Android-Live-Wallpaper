@@ -20,7 +20,7 @@ signal on_command(action:String, pos:Vector3i, result:bool)
 # 'Offset' for fractional position.
 # 'OffsetStep' for page step size. 
 # 'PixelOffset' for exact pixel displacement.
-signal on_offsets_changed(Offset:Vector2, OffsetStep:Vector2, PixelOffset:Vector2i)
+signal on_offsets_changed(Offset:Vector2, PixelOffset:Vector2i)
 
 
 # Start the live wallpaper service. return 0 if the device doesn't support live wallpaper service
@@ -95,11 +95,10 @@ func _apply_window_insets(L:int,R:int,U:int,D:int)->void:
 	apply_window_insets.emit(L,R,U,D)
 
 func _on_command(action:String,x:int,y:int,z:int,result:bool):
-	print("action:",action," pos:",Vector3i(x,y,z), "  result:",result)
 	on_command.emit(action,Vector3i(x,y,z),result)
 
-func _on_offsets_changed(xOffset,yOffset,xOffsetStep,yOffsetStep,xPixelOffset,yPixelOffset):
-	on_offsets_changed.emit(Vector2(xOffset,yOffset),Vector2(xOffsetStep,yOffsetStep),Vector2i(xPixelOffset,yPixelOffset))
+func _on_offsets_changed(xOffset,yOffset,xPixelOffset,yPixelOffset):
+	on_offsets_changed.emit(Vector2(xOffset,yOffset),Vector2i(xPixelOffset,yPixelOffset))
 
 class dummy:
 	static func startWallpaperService()->int:return 0 
