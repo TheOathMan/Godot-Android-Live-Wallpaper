@@ -16,6 +16,13 @@ signal trim_memory(level:int)
 # actions based on the command type. This can include responding to user interactions or system events.
 signal on_command(action:String, pos:Vector3i, result:bool)
 
+# Invoked when home screen scroll position changes. 
+# 'Offset' for fractional position.
+# 'OffsetStep' for page step size. 
+# 'PixelOffset' for exact pixel displacement.
+signal on_offsets_changed(Offset:Vector2, OffsetStep:Vector2, PixelOffset:Vector2i)
+
+
 # Start the live wallpaper service. return 0 if the device doesn't support live wallpaper service
 func start_live_wallpaper_service()->int:
 	return get_plugin().startWallpaperService()
@@ -54,6 +61,7 @@ func _ready():
 		_live_wallpaper_plugin.connect("TrimMemory",_trim_memory)
 		_live_wallpaper_plugin.connect("ApplyWindowInsets",_apply_window_insets)
 		_live_wallpaper_plugin.connect("OnCommand",_on_command)
+		_live_wallpaper_plugin.connect("onOffsetsChanged",_on_offsets_changed)
 		
 		# Optional but importent. pause all process related tasks when wallpaper isn't visible.
 		# Note that this won't work with node that has it's Process mode set to 'WhenPaused' or 'Always' 
@@ -89,6 +97,9 @@ func _apply_window_insets(L:int,R:int,U:int,D:int)->void:
 func _on_command(action:String,x:int,y:int,z:int,result:bool):
 	print("action:",action," pos:",Vector3i(x,y,z), "  result:",result)
 	on_command.emit(action,Vector3i(x,y,z),result)
+
+func _on_offsets_changed(xOffset,yOffset,xOffsetStep,yOffsetStep,xPixelOffset,yPixelOffset):
+	on_offsets_changed.emit(Vector2(xOffset,yOffset),Vector2(xOffsetStep,yOffsetStep),Vector2i(xPixelOffset,yPixelOffset))
 
 class dummy:
 	static func startWallpaperService()->int:return 0 

@@ -175,6 +175,25 @@ class LiveWallpaperService : WallpaperService() {
             return Bundle()
         }
 
+        override fun onOffsetsChanged(
+            xOffset: Float,
+            yOffset: Float,
+            xOffsetStep: Float,
+            yOffsetStep: Float,
+            xPixelOffset: Int,
+            yPixelOffset: Int
+        ) {
+            super.onOffsetsChanged(
+                xOffset,
+                yOffset,
+                xOffsetStep,
+                yOffsetStep,
+                xPixelOffset,
+                yPixelOffset
+            )
+            mGodotWallpaper?.wpPlugin?.EmitonOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset)
+        }
+
         override fun onDestroy() {
             Logwp("[Engine$EngineRun] onDestroy")
             super.onDestroy()
@@ -200,6 +219,7 @@ class LiveWallpaper(godot: Godot): GodotPlugin(godot) {
         signal.add(SignalInfo("ApplyWindowInsets",Integer::class.java,Integer::class.java,Integer::class.java,Integer::class.java))
         signal.add(SignalInfo("VisibilityChanged",java.lang.Boolean::class.java))
         signal.add(SignalInfo("OnCommand", String::class.java, Integer::class.java, Integer::class.java, Integer::class.java, java.lang.Boolean::class.java))
+        signal.add(SignalInfo("onOffsetsChanged", java.lang.Float::class.java,java.lang.Float::class.java, java.lang.Float::class.java, java.lang.Float::class.java, Integer::class.java,Integer::class.java))
         return signal
     }
 
@@ -305,4 +325,7 @@ class LiveWallpaper(godot: Godot): GodotPlugin(godot) {
         emitSignal("OnCommand",action,x,y,z,result)
     }
 
+    fun EmitonOffsetsChanged(xOffset: Float,yOffset: Float,xOffsetStep: Float,yOffsetStep: Float,xPixelOffset: Int,yPixelOffset: Int){
+        emitSignal("onOffsetsChanged",xOffset,yOffset,xOffsetStep,yOffsetStep,xPixelOffset,yPixelOffset)
+    }
 }

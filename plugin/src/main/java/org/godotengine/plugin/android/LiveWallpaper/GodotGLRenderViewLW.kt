@@ -82,10 +82,6 @@ open class GodotGLRenderViewLW(
     private val context:Context,
     private val host: GodotHost,
     private val godot: Godot,
-    private val xrMode: XRMode,
-    private val translucent: Boolean=false,
-    private val useDebugOpengl: Boolean=false//,
-    //private var surfaceHolder:SurfaceHolder
 ) :
     GLSurfaceViewWP(context), GodotRenderView {
 
@@ -239,6 +235,8 @@ open class GodotGLRenderViewLW(
         preserveEGLContextOnPause = true
         isFocusableInTouchMode = false
 
+        setEGLConfigChooser(8, 8, 8, 8, 16, 0)
+        setEGLContextClientVersion(2);
     }
 
     override fun startRenderer() {

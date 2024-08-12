@@ -2,9 +2,6 @@
 
 package org.godotengine.plugin.android.LiveWallpaper
 
-//import org.godotengine.godot.utils.ProcessPhoenix
-//import com.jakewharton.processphoenix.PhoenixService
-
 import android.app.Activity
 import android.content.Context
 import android.os.Process
@@ -27,7 +24,6 @@ fun Logwp(msg:String){
 }
 class GodotWallpaper(private val context: Context) : GodotHost {
 
-    private val TAG = "godot"
     private var mGodot:Godot = Godot(context)
     private var proxyActivity: ProxyActivity = ProxyActivity(context)
     var godotGLRenderViewLW:GodotGLRenderViewLW?=null
@@ -53,13 +49,12 @@ class GodotWallpaper(private val context: Context) : GodotHost {
     }
 
     fun InitRenderEngine(){
-        godotGLRenderViewLW = object : GodotGLRenderViewLW(context, this, mGodot, XRMode.REGULAR ) {
+        godotGLRenderViewLW = object : GodotGLRenderViewLW(context, this, mGodot) {
             override fun getHolder(): SurfaceHolder {
                 return mSurfaceHolder!!
             }
         }.apply {
             PreRender()
-            setEGLContextClientVersion(2);
             setRenderer(GetRenderer())
             renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
         }
@@ -69,7 +64,6 @@ class GodotWallpaper(private val context: Context) : GodotHost {
     }
 
     fun SurfaceUpdated(){
-        //Logwp(CallReflection("mWaitingForSurface").toString())
         Logwp("Surface Updated")
         view?.surfaceDestroyed(mSurfaceHolder!!)
         view?.surfaceCreated(mSurfaceHolder!!)

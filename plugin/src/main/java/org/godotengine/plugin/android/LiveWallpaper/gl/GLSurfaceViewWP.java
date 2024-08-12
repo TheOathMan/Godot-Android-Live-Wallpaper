@@ -575,8 +575,7 @@ public class GLSurfaceViewWP extends SurfaceView implements SurfaceHolder.Callba
      * depending upon the value of {@link #setPreserveEGLContextOnPause(boolean)}.
      *
      * This method should be called when it is no longer desirable for the
-     * GLSurfaceViewWP to continue rendering, such as in response to
-     * {@link android.app.Activity#onStop Activity.onStop}.
+     * GLSurfaceViewWP to continue rendering
      *
      * Must not be called before a renderer has been set.
      */
