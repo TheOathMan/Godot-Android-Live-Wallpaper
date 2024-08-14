@@ -35,6 +35,7 @@ class LiveWallpaperService : WallpaperService() {
         var windowInsets:WindowInsets?=null
     }
 
+
     private var mSurfaceNeedsUpdate: Boolean=false
     private var mGodotWallpaper:GodotWallpaper?=null
     var TopEngine:LiveWallpaperEngine?=null
@@ -191,6 +192,11 @@ class LiveWallpaperService : WallpaperService() {
                 xPixelOffset,
                 yPixelOffset
             )
+            var homeScreenCountx = if (xOffsetStep > 0) (1.0 / xOffsetStep).toInt() + 1 else 1
+            var homeScreenCounty = if (yOffsetStep > 0) (1.0 / yOffsetStep).toInt() + 1 else 1
+
+            // we didn't combine both signals because 4.2 JNI breaks if a signal has more than 5 parameters
+            mGodotWallpaper?.wpPlugin?.EmitonHomeScreenCountUpdated(homeScreenCountx,homeScreenCounty)
             mGodotWallpaper?.wpPlugin?.EmitonOffsetsChanged(xOffset, yOffset, xPixelOffset, yPixelOffset)
         }
 
@@ -220,6 +226,7 @@ class LiveWallpaper(godot: Godot): GodotPlugin(godot) {
         signal.add(SignalInfo("VisibilityChanged",java.lang.Boolean::class.java))
         signal.add(SignalInfo("OnCommand", String::class.java, Integer::class.java, Integer::class.java, Integer::class.java, java.lang.Boolean::class.java))
         signal.add(SignalInfo("onOffsetsChanged", java.lang.Float::class.java,java.lang.Float::class.java, Integer::class.java,Integer::class.java))
+        signal.add(SignalInfo("onHomeScreenCountUpdated",Integer::class.java, Integer::class.java))
         return signal
     }
 
@@ -289,6 +296,7 @@ class LiveWallpaper(godot: Godot): GodotPlugin(godot) {
         return LiveWallpaperService.getInstance()?.TopEngine?.isPreview?:false
     }
 
+
     @UsedByGodot
     fun ResetToDefaultWallpaper() {
         val wallpaperManager = WallpaperManager.getInstance(activity)
@@ -327,5 +335,8 @@ class LiveWallpaper(godot: Godot): GodotPlugin(godot) {
 
     fun EmitonOffsetsChanged(xOffset: Float,yOffset: Float,xPixelOffset: Int,yPixelOffset: Int){
         emitSignal("onOffsetsChanged",xOffset,yOffset,xPixelOffset,yPixelOffset)
+    }
+    fun EmitonHomeScreenCountUpdated(countx: Int,county: Int){
+        emitSignal("onHomeScreenCountUpdated",countx,county)
     }
 }

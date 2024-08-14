@@ -18,9 +18,12 @@ signal on_command(action:String, pos:Vector3i, result:bool)
 
 # Invoked when home screen scroll position changes. 
 # 'Offset' for fractional position.
-# 'OffsetStep' for page step size. 
 # 'PixelOffset' for exact pixel displacement.
 signal on_offsets_changed(Offset:Vector2, PixelOffset:Vector2i)
+
+# count_x: horizontal homescreen count, count_y: verical homescreen count
+signal homescreen_count_updated(count_x:int,count_y:int)
+
 
 
 # Start the live wallpaper service. return 0 if the device doesn't support live wallpaper service
@@ -62,10 +65,11 @@ func _ready():
 		_live_wallpaper_plugin.connect("ApplyWindowInsets",_apply_window_insets)
 		_live_wallpaper_plugin.connect("OnCommand",_on_command)
 		_live_wallpaper_plugin.connect("onOffsetsChanged",_on_offsets_changed)
+		_live_wallpaper_plugin.connect("onHomeScreenCountUpdated",_on_homeScreen_count_updated)
+
 		
 		# Optional but importent. pause all process related tasks when wallpaper isn't visible.
 		# Note that this won't work with node that has it's Process mode set to 'WhenPaused' or 'Always' 
-		# Render Pause/Resume is handled by the plugin an will always be paused when wallpaper not visible.
 		visibility_changed.connect(func (visible:bool):
 			print("visiblity from gd:%s"%str(visible))
 			if visible: 
@@ -99,6 +103,9 @@ func _on_command(action:String,x:int,y:int,z:int,result:bool):
 
 func _on_offsets_changed(xOffset,yOffset,xPixelOffset,yPixelOffset):
 	on_offsets_changed.emit(Vector2(xOffset,yOffset),Vector2i(xPixelOffset,yPixelOffset))
+
+func _on_homeScreen_count_updated(count_x:int,count_y:int):
+	homescreen_count_updated.emit(count_x,count_y)
 
 class dummy:
 	static func startWallpaperService()->int:return 0 
