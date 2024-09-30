@@ -192,9 +192,8 @@ class LiveWallpaperService : WallpaperService() {
                 xPixelOffset,
                 yPixelOffset
             )
-            var homeScreenCountx = if (xOffsetStep > 0) ceil(1.0 / xOffsetStep).toInt()+1 else 1
-            var homeScreenCounty = if (yOffsetStep > 0) ceil(1.0 / yOffsetStep).toInt()+1 else 1
-
+            val homeScreenCountx = if (xOffsetStep > 0) ceil(1.0 / xOffsetStep).toInt() + 1 else 1
+            val homeScreenCounty = if (yOffsetStep > 0) ceil(1.0 / yOffsetStep).toInt() + 1 else 1
             // we didn't combine both signals because 4.2 JNI breaks if a signal has more than 5 parameters
             mGodotWallpaper?.wpPlugin?.EmitonHomeScreenCountUpdated(homeScreenCountx,homeScreenCounty)
             mGodotWallpaper?.wpPlugin?.EmitonOffsetsChanged(xOffset, yOffset, xPixelOffset, yPixelOffset)

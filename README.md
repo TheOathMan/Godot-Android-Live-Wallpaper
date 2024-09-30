@@ -45,6 +45,8 @@ compile "Wallpaper Name" "path/to/your/thumbnail.png"
 ## Known Issues
 * Setting the app as a live wallpaper for the lock screen, home screen, or both will always set it to both in Android 14. A workaround is to set it manually from the device wallpaper settings.
 
+* Home screen signals ('on_offsets_changed' and 'homescreen_count_updated'), don't seem to work on Android 9, but work on Android 14.
+
 ## Important Considerations:
 
 * The plugin will attempt to run your entire Godot application as a background live wallpaper, including handling all touch inputs. Therefore, ensure you query the is_live_wallpaper() function to delete or limit frame rate and free resources that are not essential to the live wallpaper process, such as UI elements. Check the sample project in the [`release`](https://github.com/TheOathMan/Godot-Android-Live-Wallpaper/releases) section for a working implementation of this.
