@@ -45,7 +45,11 @@ compile "Wallpaper Name" "path/to/your/thumbnail.png"
 ## Known Issues
 * Setting the app as a live wallpaper for the lock screen, home screen, or both will always set it to both in Android 14. A workaround is to set it manually from the device wallpaper settings.
 
-* Samsung's One UI launcher is known to have issues with calling the onOffsetsChanged() callback for live wallpapers. This problem has been observed in several Samsung devices across different Android versions, including older devices like the Note 8 and newer ones like the Galaxy S23. As a result, `these two signals 'homescreen_count_updated' and 'on_offsets_changed' don't function properly on stock Samsung launchers`. A workaround would be to download [`Pixel Launcher`](https://play.google.com/store/search?q=pixel+launcher&c=apps&hl=en) which is what I'm using or [`Smart Launcher 6`](https://play.google.com/store/apps/details?id=ginlemon.flowerfree). These Launchers (or any other Launchers on the store) should call all the home screen signals just fine. Samsung heavily customizes Android, including the launcher, and these customizations can interfere with certain system callbacks.
+* Samsung's One UI launcher is known to have issues with calling the [`onOffsetsChanged()`](https://developer.android.com/reference/android/service/wallpaperWallpaperService.Engine#onOffsetsChanged(float,%20float,%20float,%20float,%20int%20int)) callback. This problem has been observed on various Samsung devices across different Android versions for years, including older models like the Note 8 and newer ones like the Galaxy S23. As a result, the signals `homescreen_count_updated` and `on_offsets_changed` do not function properly on stock Samsung launchers. A potential workaround is to download [`Pixel Launcher`](https://play.google.com/store/search?q=pixel+launcher&c=apps&hl=en), which is what I'm using, or [`Smart Launcher 6`](https://play.google.com/store/apps/details?id=ginlemon.flowerfree). These launchers (or any other third-party launchers available on the Play Store) should work fine with home screen signals.
+Samsung heavily customizes Android, including the launcher, which can interfere with certain system callbacks. In a production context, asking the end user to switch launchers just for the scrolling signals to work as intended is not ideal. Therefore, I recommend emulating home screen scrolling using Godot's touch input functions.
+
+
+
 
 
 ## Important Considerations:
