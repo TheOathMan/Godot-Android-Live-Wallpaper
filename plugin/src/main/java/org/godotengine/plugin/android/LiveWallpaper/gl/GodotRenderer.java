@@ -63,6 +63,11 @@ public class GodotRenderer implements GLSurfaceViewWP.Renderer {
         return swapBuffers;
     }
 
+    @Override
+    public void onRenderThreadExiting() {
+        GodotLib.ondestroy();
+    }
+
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         GodotLib.resize(null, width, height);
         for (GodotPlugin plugin : pluginRegistry.getAllPlugins()) {

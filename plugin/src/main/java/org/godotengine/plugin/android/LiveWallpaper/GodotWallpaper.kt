@@ -49,7 +49,7 @@ class GodotWallpaper(private val context: Context) : GodotHost {
     }
 
     fun InitRenderEngine(){
-        godotGLRenderViewLW = object : GodotGLRenderViewLW(context, this, mGodot) {
+        godotGLRenderViewLW = object : GodotGLRenderViewLW(context,  mGodot) {
             override fun getHolder(): SurfaceHolder {
                 return mSurfaceHolder!!
             }
@@ -96,16 +96,16 @@ class GodotWallpaper(private val context: Context) : GodotHost {
     }
 
     fun Destroy(){
-        for (plugin in GodotPluginRegistry.getPluginRegistry().allPlugins) {
-            plugin.onMainDestroy()
-        }
-        mGodot.runOnRenderThread {
-            Pause()
-            GodotLib.ondestroy()
-            godotGLRenderViewLW?.preserveEGLContextOnPause=false
-            godotGLRenderViewLW?.onActivityStopped()
-
-        }
+//        for (plugin in GodotPluginRegistry.getPluginRegistry().allPlugins) {
+//            plugin.onMainDestroy()
+//        }
+//        mGodot.runOnRenderThread {
+//            Pause()
+//            GodotLib.ondestroy()
+//            godotGLRenderViewLW?.preserveEGLContextOnPause=false
+//            godotGLRenderViewLW?.onActivityStopped()
+//
+//        }
     }
 
     private fun Kill(){

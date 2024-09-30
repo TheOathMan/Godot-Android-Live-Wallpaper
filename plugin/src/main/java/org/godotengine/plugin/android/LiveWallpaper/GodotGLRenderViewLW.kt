@@ -47,7 +47,7 @@ import org.godotengine.godot.GodotHost
 import org.godotengine.godot.GodotLib
 import org.godotengine.godot.GodotRenderView
 //import android.opengl.GLSurfaceView
-//import org.godotengine.godot.gl.GLSurfaceView
+import org.godotengine.godot.gl.GLSurfaceView
 //import org.godotengine.godot.gl.GodotRenderer
 import org.godotengine.godot.input.GodotInputHandler
 import org.godotengine.godot.xr.XRMode
@@ -80,8 +80,7 @@ import java.lang.reflect.Method
 @SuppressLint("ViewConstructor")
 open class GodotGLRenderViewLW(
     private val context:Context,
-    private val host: GodotHost,
-    private val godot: Godot,
+    private val godot: Godot
 ) :
     GLSurfaceViewWP(context), GodotRenderView {
 
@@ -110,12 +109,16 @@ open class GodotGLRenderViewLW(
         }
     }
 
-    fun onActivityStopped() {
+    override fun onActivityStopped() {
         pauseGLThread()
     }
 
-    fun onActivityStarted() {
+    override fun onActivityStarted() {
         resumeGLThread()
+    }
+
+    override fun onActivityDestroyed() {
+        requestRenderThreadExitAndWait();
     }
 
     override fun onActivityResumed() {
@@ -130,7 +133,7 @@ open class GodotGLRenderViewLW(
 
 
     override fun onBackPressed() {
-        godot.onBackPressed(host)
+        godot.onBackPressed()
     }
 
     override fun getInputHandler(): GodotInputHandler {

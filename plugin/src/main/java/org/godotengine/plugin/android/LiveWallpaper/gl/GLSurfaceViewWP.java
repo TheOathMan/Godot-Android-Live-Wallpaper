@@ -595,6 +595,15 @@ public class GLSurfaceViewWP extends SurfaceView implements SurfaceHolder.Callba
     protected final void resumeGLThread() {
         mGLThread.onResume();
     }
+
+    /**
+     * Requests the render thread to exit and block until it does.
+     */
+    protected final void requestRenderThreadExitAndWait() {
+        if (mGLThread != null) {
+            mGLThread.requestExitAndWait();
+        }
+    }
     // -- GODOT end --
 
     /**
@@ -783,6 +792,11 @@ public class GLSurfaceViewWP extends SurfaceView implements SurfaceHolder.Callba
          * @return true if the buffers should be swapped, false otherwise.
          */
         boolean onDrawFrame(GL10 gl);
+
+        /**
+         * Invoked when the render thread is in the process of shutting down.
+         */
+        void onRenderThreadExiting();
         // -- GODOT end --
     }
 
@@ -1617,14 +1631,20 @@ public class GLSurfaceViewWP extends SurfaceView implements SurfaceHolder.Callba
                 }
 
             } finally {
-                /*
-                 * clean-up everything...
-                 */
-                synchronized (sGLThreadManager) {
-                    stopEglSurfaceLocked();
-                    stopEglContextLocked();
-                }
-            }
+				/*
+				 * clean-up everything...
+				 */
+				synchronized (sGLThreadManager) {
+					Log.d("GLThread", "Exiting render thread");
+					GLSurfaceViewWP view = mGLSurfaceViewWeakRef.get();
+					if (view != null) {
+						view.mRenderer.onRenderThreadExiting();
+					}
+
+					stopEglSurfaceLocked();
+					stopEglContextLocked();
+				}
+			}
         }
 
         public boolean ableToDraw() {

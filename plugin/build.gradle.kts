@@ -15,7 +15,7 @@ val pluginPackageName = "org.godotengine.plugin.android.LiveWallpaper"
 
 android {
     namespace = pluginPackageName
-    compileSdk = 33
+    compileSdk = 34
 
     buildFeatures {
         buildConfig = true
@@ -40,7 +40,7 @@ android {
 }
 
 dependencies {
-    implementation("org.godotengine:godot:4.2.0.stable")
+    implementation("org.godotengine:godot:4.3.0.stable")
     // Include only headers/interfaces for compile
    // compileOnly(fileTree(mapOf("dir" to "C:/Development/Projects/open source/Godot Engine 4.3.beta3.dev/godot/platform/android/java/lib/src/", "include" to listOf("**/*.java", "**/*.kt"))))
     // Or specify jars/libraries that provide the necessary headers
