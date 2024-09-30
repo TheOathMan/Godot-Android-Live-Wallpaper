@@ -45,7 +45,8 @@ compile "Wallpaper Name" "path/to/your/thumbnail.png"
 ## Known Issues
 * Setting the app as a live wallpaper for the lock screen, home screen, or both will always set it to both in Android 14. A workaround is to set it manually from the device wallpaper settings.
 
-* Home screen signals ('on_offsets_changed' and 'homescreen_count_updated'), don't seem to work on Android 9, but work on Android 14.
+* Samsung's One UI launcher is known to have issues with calling the onOffsetsChanged() callback for live wallpapers. This problem has been observed in several Samsung devices across different Android versions, including older devices like the Note 8 and newer ones like the Galaxy S23. As a result, `these two signals 'homescreen_count_updated' and 'on_offsets_changed' don't function properly on stock Samsung launchers`. A workaround would be to download [`Pixel Launcher`](https://play.google.com/store/search?q=pixel+launcher&c=apps&hl=en) which is what I'm using or [`Smart Launcher 6`](https://play.google.com/store/apps/details?id=ginlemon.flowerfree). These Launchers (or any other Launchers on the store) should call all the home screen signals just fine. Samsung heavily customizes Android, including the launcher, and these customizations can interfere with certain system callbacks.
+
 
 ## Important Considerations:
 
