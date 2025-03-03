@@ -11,6 +11,7 @@ import android.content.pm.PackageManager
 import android.content.res.AssetManager
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
@@ -26,16 +27,25 @@ import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowInsets
 import android.view.WindowInsetsAnimation
+import android.view.WindowInsetsController
 import android.view.WindowManager
 import java.io.File
 
 class ProxyActivity(private val serviceContext: Context) : Activity() {
 
+    companion object {
+        // if I do not kill proxy window right after Godot.onCreate, it will turn on the app the kill it instead.
+        // thanks to a line in Godot.kt at function enableImmersiveMode, a null proxy window returns early right before the disaster.
+        // plus enableImmersiveMode is useless in a live wallpaper app any way.
+        var DisableProxyWindow:Boolean=false
+    }
+
     override fun getResources(): Resources {
-        //displayContext.getRootWindowInsets
         return serviceContext.resources
     }
-    override fun getWindow(): Window {
+    override fun getWindow(): Window? {
+        if (DisableProxyWindow)
+            return null
         return ProxyWindow(serviceContext)
     }
 
@@ -158,6 +168,8 @@ class ProxyWindow(context: Context?) : Window(context){
     override fun getDecorView(): View {
         return ProxyView(context)
     }
+
+
     override fun takeSurface(p0: SurfaceHolder.Callback2?) {
         TODO("Not yet needed")
     }
@@ -345,11 +357,16 @@ class ProxyWindow(context: Context?) : Window(context){
     override fun setResizingCaptionDrawable(p0: Drawable?) {
         TODO("Not yet needed")
     }
+
 }
 
 class ProxyView(private val serviceContext: Context) : View(serviceContext) {
     override fun getRootWindowInsets(): WindowInsets {
         return LiveWallpaperService.windowInsets!!
+    }
+
+    override fun getWindowInsetsController(): WindowInsetsController? {
+        return getWindowInsetsController()
     }
 }
 

@@ -30,7 +30,6 @@
 
 package org.godotengine.plugin.android.LiveWallpaper
 
-//import androidx.annotation.Keep
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
@@ -43,18 +42,11 @@ import android.view.MotionEvent
 import android.view.PointerIcon
 import android.view.SurfaceView
 import org.godotengine.godot.Godot
-import org.godotengine.godot.GodotHost
 import org.godotengine.godot.GodotLib
 import org.godotengine.godot.GodotRenderView
-//import android.opengl.GLSurfaceView
-import org.godotengine.godot.gl.GLSurfaceView
-//import org.godotengine.godot.gl.GodotRenderer
 import org.godotengine.godot.input.GodotInputHandler
-import org.godotengine.godot.xr.XRMode
 import org.godotengine.plugin.android.LiveWallpaper.gl.GLSurfaceViewWP
 import org.godotengine.plugin.android.LiveWallpaper.gl.GodotRenderer
-import java.lang.reflect.InvocationTargetException
-import java.lang.reflect.Method
 
 /**
  * A simple GLSurfaceView sub-class that demonstrate how to perform
@@ -84,7 +76,7 @@ open class GodotGLRenderViewLW(
 ) :
     GLSurfaceViewWP(context), GodotRenderView {
 
-    private val inputHandler: GodotInputHandler = GodotInputHandler(this)
+    private val inputHandler: GodotInputHandler = GodotInputHandler(context,godot)
     private val godotRenderer: GodotRenderer =
         GodotRenderer()
     private val customPointerIcons = SparseArray<PointerIcon>()
@@ -93,9 +85,9 @@ open class GodotGLRenderViewLW(
         return this
     }
 
-    override fun initInputDevices() {
-        inputHandler.initInputDevices()
-    }
+//    override fun initInputDevices() {
+//        inputHandler.initInputDevices()
+//    }
 
     override fun queueOnRenderThread(event: Runnable) {
         queueEvent(event)
@@ -132,9 +124,9 @@ open class GodotGLRenderViewLW(
 
 
 
-    override fun onBackPressed() {
-        godot.onBackPressed()
-    }
+//    override fun onBackPressed() {
+//        godot.onBackPressed()
+//    }
 
     override fun getInputHandler(): GodotInputHandler {
         return inputHandler

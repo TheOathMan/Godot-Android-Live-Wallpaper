@@ -50,6 +50,8 @@ class LiveWallpaperService : WallpaperService() {
             instance = this
         }
         mGodotWallpaper = GodotWallpaper(applicationContext)
+//        applicationContext.
+
     }
     override fun onCreateEngine(): Engine {
         EngineRun++
@@ -59,7 +61,7 @@ class LiveWallpaperService : WallpaperService() {
     }
     override fun onDestroy() {
         Logwp("[Service] onDestroy")
-        mGodotWallpaper?.terminateGodotLiveWallpaperService()
+//        mGodotWallpaper?.terminateGodotLiveWallpaperService()
         super.onDestroy()
     }
     override fun onTrimMemory(level: Int) {
@@ -80,6 +82,7 @@ class LiveWallpaperService : WallpaperService() {
         var mSurfaceHolder: SurfaceHolder?=null
         override fun onCreate(surfaceHolder: SurfaceHolder) {
             Logwp("[Engine$EngineRun] onCreate")
+
             super.onCreate(surfaceHolder)
             if(EngineRun==1) {
                 mGodotWallpaper?.onCreate()
@@ -116,6 +119,7 @@ class LiveWallpaperService : WallpaperService() {
         }
 
         override fun onVisibilityChanged(visible: Boolean) {
+
             if (visible) {
                 Logwp("[Engine$EngineRun] visible")
                 if(this !== TopEngine || mSurfaceNeedsUpdate) {

@@ -1,6 +1,5 @@
-
-
 package org.godotengine.plugin.android.LiveWallpaper
+
 
 import android.app.Activity
 import android.content.Context
@@ -8,16 +7,11 @@ import android.os.Process
 import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
-import android.view.SurfaceView
 import org.godotengine.godot.Godot
 import org.godotengine.godot.GodotHost
-import org.godotengine.godot.GodotLib
 import org.godotengine.godot.gl.GLSurfaceView
 import org.godotengine.godot.plugin.GodotPluginRegistry
-import org.godotengine.godot.xr.XRMode
-import java.lang.reflect.Field
-import java.lang.reflect.InvocationTargetException
-import java.lang.reflect.Method
+
 
 fun Logwp(msg:String){
     Log.v("godotwp",msg)
@@ -36,6 +30,7 @@ class GodotWallpaper(private val context: Context) : GodotHost {
 
     fun onCreate(){
         mGodot.onCreate(this)
+        ProxyActivity.DisableProxyWindow=true
     }
 
     fun InitNativeEngine(){
@@ -96,19 +91,10 @@ class GodotWallpaper(private val context: Context) : GodotHost {
     }
 
     fun Destroy(){
-//        for (plugin in GodotPluginRegistry.getPluginRegistry().allPlugins) {
-//            plugin.onMainDestroy()
-//        }
-//        mGodot.runOnRenderThread {
-//            Pause()
-//            GodotLib.ondestroy()
-//            godotGLRenderViewLW?.preserveEGLContextOnPause=false
-//            godotGLRenderViewLW?.onActivityStopped()
-//
-//        }
+        mGodot.onDestroy(this)
     }
 
-    private fun Kill(){
+    private fun kill(){
         synchronized(lock) {
             Process.killProcess(Process.myPid())
             Runtime.getRuntime().exit(0)
@@ -117,7 +103,7 @@ class GodotWallpaper(private val context: Context) : GodotHost {
 
     fun terminateGodotLiveWallpaperService() {
         Logwp("Force quitting Godot instance")
-        Kill()
+        kill()
     }
 
 
