@@ -26,9 +26,9 @@ class AndroidExportPlugin extends EditorExportPlugin:
 		
 	func _get_android_libraries(platform: EditorExportPlatform, debug: bool) -> PackedStringArray:
 		if debug:
-			return PackedStringArray(["res://addons/Android/LiveWallpaper/bin/LiveWallpaper-debug.aar"])
+			return PackedStringArray(["res://addons/LiveWallpaper/bin/LiveWallpaper-debug.aar"])
 		else:
-			return PackedStringArray(["res://addons/Android/LiveWallpaper/bin/LiveWallpaper-release.aar"])
+			return PackedStringArray(["res://addons/LiveWallpaper/bin/LiveWallpaper-release.aar"])
 	
 	func _get_name() -> String:
 		return PLUGIN_NAME
