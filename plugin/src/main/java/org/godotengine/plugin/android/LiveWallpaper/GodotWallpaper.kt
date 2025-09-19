@@ -1,9 +1,6 @@
 package org.godotengine.plugin.android.LiveWallpaper
 
-
-import android.app.Activity
 import android.content.Context
-import android.os.Process
 import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
@@ -12,29 +9,22 @@ import org.godotengine.godot.GodotHost
 import org.godotengine.godot.gl.GLSurfaceView
 import org.godotengine.godot.plugin.GodotPluginRegistry
 
-
 fun Logwp(msg:String){
     Log.v("godotwp",msg)
 }
 class GodotWallpaper(private val context: Context) : GodotHost {
 
-    private var mGodot:Godot = Godot(context)
-    private var proxyActivity: ProxyActivity = ProxyActivity(context)
-    var godotGLRenderViewLW:GodotGLRenderViewLW?=null
+    private val mGodot: Godot by lazy { Godot.getInstance(context) }
+    var godotGLRenderViewLW:GodotGLRenderViewWP?=null
     var wpPlugin:LiveWallpaper?=null
     private var mSurfaceHolder: SurfaceHolder?=null
-    private var view: SurfaceHolder.Callback2? = null
-
-    private val lock = Any()
-
 
     fun onCreate(){
-        mGodot.onCreate(this)
-        ProxyActivity.DisableProxyWindow=true
+        mGodot.onStart(this)
     }
 
     fun InitNativeEngine(){
-        if (!mGodot.onInitNativeLayer(this)) {
+        if (!mGodot.initEngine(this, emptyList())) {
             throw IllegalStateException("Unable to initialize engine native layer");
         }
     }
@@ -44,7 +34,7 @@ class GodotWallpaper(private val context: Context) : GodotHost {
     }
 
     fun InitRenderEngine(){
-        godotGLRenderViewLW = object : GodotGLRenderViewLW(context,  mGodot) {
+        godotGLRenderViewLW = object : GodotGLRenderViewWP(context,  mGodot) {
             override fun getHolder(): SurfaceHolder {
                 return mSurfaceHolder!!
             }
@@ -55,14 +45,11 @@ class GodotWallpaper(private val context: Context) : GodotHost {
         }
         mGodot.renderView = godotGLRenderViewLW
         InitPlugins()
-        view = godotGLRenderViewLW?.view as SurfaceHolder.Callback2
     }
 
     fun SurfaceUpdated(){
-        Logwp("Surface Updated")
-        view?.surfaceDestroyed(mSurfaceHolder!!)
-        view?.surfaceCreated(mSurfaceHolder!!)
-        godotGLRenderViewLW?.requestRender()
+        godotGLRenderViewLW?.surfaceDestroyed(mSurfaceHolder!!)
+        godotGLRenderViewLW?.surfaceCreated(mSurfaceHolder!!)
     }
 
     fun InitPlugins(){
@@ -87,6 +74,7 @@ class GodotWallpaper(private val context: Context) : GodotHost {
     }
 
     fun Resume(){
+//        godotGLRenderViewLW!!.GetRenderer().SyncRendState.signalSurfaceReady()
         mGodot.onResume(this)
     }
 
@@ -94,22 +82,8 @@ class GodotWallpaper(private val context: Context) : GodotHost {
         mGodot.onDestroy(this)
     }
 
-    private fun kill(){
-        synchronized(lock) {
-            Process.killProcess(Process.myPid())
-            Runtime.getRuntime().exit(0)
-        }
-    }
 
-    fun terminateGodotLiveWallpaperService() {
-        Logwp("Force quitting Godot instance")
-        kill()
-    }
-
-
-    override fun getActivity(): Activity {
-        return proxyActivity
-    }
+    override fun getActivity() = null
 
     override fun getGodot(): Godot {
         return mGodot

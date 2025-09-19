@@ -19,6 +19,14 @@ package org.godotengine.plugin.android.LiveWallpaper.gl;
  */
 
 
+/* Required Wallpaper Changes. Marked by [WP]
+* preserves the necessary synchronization that live wallpapers require.
+* The Godot version removed these critical waiting mechanisms to fix specific
+* ANRs and strict mode violations that show up in Google Play Console report, but
+* this breaks the live wallpaper use case.
+*/
+
+
 import android.content.Context;
 import android.opengl.EGL14;
 import android.opengl.EGLExt;
@@ -1716,7 +1724,7 @@ public class GLSurfaceViewWP extends SurfaceView implements SurfaceHolder.Callba
             }
         }
 
-        public void surfaceCreated() {
+        public void surfaceCreated() { //[WP]
             synchronized(sGLThreadManager) {
                 if (LOG_THREADS) {
                     Log.i("GLThread", "surfaceCreated tid=" + getId());
@@ -1736,7 +1744,7 @@ public class GLSurfaceViewWP extends SurfaceView implements SurfaceHolder.Callba
             }
         }
 
-        public void surfaceDestroyed() {
+        public void surfaceDestroyed() { //[WP]
             synchronized(sGLThreadManager) {
                 if (LOG_THREADS) {
                     Log.i("GLThread", "surfaceDestroyed tid=" + getId());
@@ -1753,7 +1761,7 @@ public class GLSurfaceViewWP extends SurfaceView implements SurfaceHolder.Callba
             }
         }
 
-        public void onPause() {
+        public void onPause() {// [WP]
             synchronized (sGLThreadManager) {
                 if (LOG_PAUSE_RESUME) {
                     Log.i("GLThread", "onPause tid=" + getId());
@@ -1773,7 +1781,7 @@ public class GLSurfaceViewWP extends SurfaceView implements SurfaceHolder.Callba
             }
         }
 
-        public void onResume() {
+        public void onResume() {// [WP]
             synchronized (sGLThreadManager) {
                 if (LOG_PAUSE_RESUME) {
                     Log.i("GLThread", "onResume tid=" + getId());
@@ -1814,7 +1822,7 @@ public class GLSurfaceViewWP extends SurfaceView implements SurfaceHolder.Callba
 
                 sGLThreadManager.notifyAll();
 
-                // Wait for thread to react to resize and render a frame
+                // Wait for thread to react to resize and render a frame //[WP]
                 while (! mExited && !mPaused && !mRenderComplete
                         && ableToDraw()) {
                     if (LOG_SURFACE) {

@@ -21,11 +21,14 @@ android {
     }
 
     defaultConfig {
-        minSdk = 21
+        minSdk = 24
         manifestPlaceholders["godotPluginName"] = pluginName
         manifestPlaceholders["godotPluginPackageName"] = pluginPackageName
         buildConfigField("String", "GODOT_PLUGIN_NAME", "\"${pluginName}\"")
-        setProperty("archivesBaseName", pluginName)
+
+    }
+    base {
+        archivesName.set(pluginName)
     }
 
     compileOptions {
@@ -36,9 +39,8 @@ android {
         jvmTarget = "17"
     }
 }
-
 dependencies {
-    implementation("org.godotengine:godot:4.4.0.stable")
+    api(project(":GD4_5"))
 }
 
 // BUILD TASKS DEFINITION
@@ -46,18 +48,18 @@ val copyDebugAARToAddons by tasks.registering(Copy::class) {
     description = "Copies the generated debug AAR binary to the plugin's addons directory"
     from("build/outputs/aar")
     include("$pluginName-debug.aar")
-    into("addons/$pluginName/bin")
+    into("addons/Android/$pluginName/bin")
 }
 
 val copyReleaseAARToAddons by tasks.registering(Copy::class) {
     description = "Copies the generated release AAR binary to the plugin's addons directory"
     from("build/outputs/aar")
-    include("$pluginName-release.aar")
-    into("addons/$pluginName/bin")
+    include("${pluginName}-release.aar")
+    into("addons/Android/$pluginName/bin")
 }
 
 val cleanDemoAddons by tasks.registering(Delete::class) {
-    delete("addons/$pluginName")
+    delete("addons/Android/$pluginName")
 }
 
 val copyAddonsToDemo by tasks.registering(Copy::class) {
@@ -68,7 +70,7 @@ val copyAddonsToDemo by tasks.registering(Copy::class) {
     finalizedBy(copyReleaseAARToAddons)
 
     from("export_scripts_template")
-    into("addons/$pluginName")
+    into("addons/Android/$pluginName")
 }
 
 tasks.named("assemble").configure {

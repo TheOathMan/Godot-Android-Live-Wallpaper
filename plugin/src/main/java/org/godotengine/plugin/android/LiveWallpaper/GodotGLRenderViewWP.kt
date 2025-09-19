@@ -69,25 +69,21 @@ import org.godotengine.plugin.android.LiveWallpaper.gl.GodotRenderer
 
 
 
+
 @SuppressLint("ViewConstructor")
-open class GodotGLRenderViewLW(
+open class GodotGLRenderViewWP(
     private val context:Context,
     private val godot: Godot
 ) :
     GLSurfaceViewWP(context), GodotRenderView {
 
     private val inputHandler: GodotInputHandler = GodotInputHandler(context,godot)
-    private val godotRenderer: GodotRenderer =
-        GodotRenderer()
+    private val godotRenderer: GodotRenderer = GodotRenderer()
     private val customPointerIcons = SparseArray<PointerIcon>()
 
     override fun getView(): SurfaceView {
         return this
     }
-
-//    override fun initInputDevices() {
-//        inputHandler.initInputDevices()
-//    }
 
     override fun queueOnRenderThread(event: Runnable) {
         queueEvent(event)
@@ -121,12 +117,6 @@ open class GodotGLRenderViewLW(
             GodotLib.focusin()
         }
     }
-
-
-
-//    override fun onBackPressed() {
-//        godot.onBackPressed()
-//    }
 
     override fun getInputHandler(): GodotInputHandler {
         return inputHandler
@@ -243,4 +233,3 @@ open class GodotGLRenderViewLW(
         return godotRenderer
     }
 }
-

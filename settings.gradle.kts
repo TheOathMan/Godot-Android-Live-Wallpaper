@@ -22,4 +22,5 @@ include(":plugin")
 
 //include(":myapplication")
 //include(":godot4_4")
-//include(":godot_4_4")
+//include(":godot_4_5")
+include(":GD4_5")

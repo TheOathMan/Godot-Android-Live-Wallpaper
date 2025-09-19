@@ -1,6 +1,5 @@
 package org.godotengine.plugin.android.LiveWallpaper
 
-import android.annotation.TargetApi
 import android.app.Activity
 import android.app.WallpaperManager
 import android.app.WallpaperManager.FLAG_LOCK
@@ -11,19 +10,19 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.service.wallpaper.WallpaperService
-import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowInsets.Type.systemBars
-import android.widget.Toast
+//import org.godotengine.godot.service.GodotService
 import org.godotengine.godot.Godot
 import org.godotengine.godot.plugin.GodotPlugin
 import org.godotengine.godot.plugin.SignalInfo
 import org.godotengine.godot.plugin.UsedByGodot
 import javax.microedition.khronos.opengles.GL10
 import kotlin.math.ceil
+
 
 
 class LiveWallpaperService : WallpaperService() {
@@ -50,8 +49,6 @@ class LiveWallpaperService : WallpaperService() {
             instance = this
         }
         mGodotWallpaper = GodotWallpaper(applicationContext)
-//        applicationContext.
-
     }
     override fun onCreateEngine(): Engine {
         EngineRun++
@@ -78,7 +75,8 @@ class LiveWallpaperService : WallpaperService() {
     }
 
     inner class LiveWallpaperEngine : Engine(){
-
+//        private var myGodotView: GodotGLRenderViewLW? = null // <-- Each engine has its OWN view
+//
         var mSurfaceHolder: SurfaceHolder?=null
         override fun onCreate(surfaceHolder: SurfaceHolder) {
             Logwp("[Engine$EngineRun] onCreate")
@@ -215,6 +213,17 @@ class LiveWallpaperService : WallpaperService() {
 
 class LiveWallpaper(godot: Godot): GodotPlugin(godot) {
 
+    companion object {
+        private var instance: LiveWallpaper? = null
+        fun getInstance(): LiveWallpaper? {
+            return instance
+        }
+    }
+
+//    fun get_godot(): Godot {
+//        return godot;
+//    }
+
     override fun onGLDrawFrame(gl: GL10?) {
         super.onGLDrawFrame(gl)
         //Logwp("[Plugin] onGLDrawFrame")
@@ -234,16 +243,15 @@ class LiveWallpaper(godot: Godot): GodotPlugin(godot) {
     }
 
     override fun onMainCreate(activity: Activity?): View? {
-        //Logwp("[Plugin] onMainCreate")
         return super.onMainCreate(activity)
     }
 
     override fun onMainDestroy() {
+
         //Logwp("[Plugin] onMainDestroy")
         super.onMainDestroy()
     }
 
-    @TargetApi(Build.VERSION_CODES.N)
     override fun onMainResume() {
         //Logwp("[Plugin] onMainResume")
         super.onMainResume()

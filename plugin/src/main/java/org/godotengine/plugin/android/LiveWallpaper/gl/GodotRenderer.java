@@ -34,7 +34,6 @@ package org.godotengine.plugin.android.LiveWallpaper.gl;
 import org.godotengine.godot.GodotLib;
 import org.godotengine.godot.plugin.GodotPlugin;
 import org.godotengine.godot.plugin.GodotPluginRegistry;
-
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -45,11 +44,18 @@ public class GodotRenderer implements GLSurfaceViewWP.Renderer {
     private final GodotPluginRegistry pluginRegistry;
     private boolean activityJustResumed = false;
 
+//    public SyncRendererState SyncRendState;
     public GodotRenderer() {
+//        SyncRendState = new SyncRendererState();
         this.pluginRegistry = GodotPluginRegistry.getPluginRegistry();
     }
 
+
+
     public boolean onDrawFrame(GL10 gl) {
+//        if (!SyncRendState.isSurfaceReady()) {
+//            return false; // Crucial: Skip swapBuffers if the surface isn't valid.
+//        }
         if (activityJustResumed) {
             GodotLib.onRendererResumed();
             activityJustResumed = false;
@@ -62,6 +68,7 @@ public class GodotRenderer implements GLSurfaceViewWP.Renderer {
 
         return swapBuffers;
     }
+
 
     @Override
     public void onRenderThreadExiting() {
@@ -92,3 +99,4 @@ public class GodotRenderer implements GLSurfaceViewWP.Renderer {
         GodotLib.onRendererPaused();
     }
 }
+
