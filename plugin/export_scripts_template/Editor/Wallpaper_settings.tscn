@@ -1,0 +1,158 @@
+[gd_scene load_steps=3 format=3 uid="uid://c3f83c4qnj8py"]
+
+[ext_resource type="Texture2D" uid="uid://lg5wwlf05du" path="res://addons/Android/LiveWallpaper/Editor/folder_open.svg" id="1_8w2i0"]
+[ext_resource type="Script" uid="uid://cj220t7mlsc3i" path="res://addons/Android/LiveWallpaper/Editor/wp_settings.gd" id="2_potun"]
+
+[node name="LiveWallpaper" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="wp_name" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="wp_name_label" type="Label" parent="MarginContainer/VBoxContainer/wp_name"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Description"
+
+[node name="wp_name_edit" type="LineEdit" parent="MarginContainer/VBoxContainer/wp_name"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Godot"
+
+[node name="wp_auth" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="wp_name_label" type="Label" parent="MarginContainer/VBoxContainer/wp_auth"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Author"
+
+[node name="wp_author_edit" type="LineEdit" parent="MarginContainer/VBoxContainer/wp_auth"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Othman"
+
+[node name="wp_thumbnail" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/wp_thumbnail"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Thumbnail"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/wp_thumbnail"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="wp_iconpath_edit" type="LineEdit" parent="MarginContainer/VBoxContainer/wp_thumbnail/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "res://icon.svg"
+
+[node name="fileDialogue" type="Button" parent="MarginContainer/VBoxContainer/wp_thumbnail/HBoxContainer"]
+custom_minimum_size = Vector2(32.33, 0)
+layout_mode = 2
+
+[node name="folderDialogue" type="TextureRect" parent="MarginContainer/VBoxContainer/wp_thumbnail/HBoxContainer/fileDialogue"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_8w2i0")
+expand_mode = 2
+stretch_mode = 3
+
+[node name="wp_contextUri" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="wp_name_label" type="Label" parent="MarginContainer/VBoxContainer/wp_contextUri"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Context URL"
+
+[node name="wp_contextUri" type="LineEdit" parent="MarginContainer/VBoxContainer/wp_contextUri"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "Uri that specifies a link for further context of this wallpaper"
+
+[node name="show mt" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="wp_name_label" type="Label" parent="MarginContainer/VBoxContainer/show mt"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Info in preview"
+
+[node name="show_mt_cb" type="CheckBox" parent="MarginContainer/VBoxContainer/show mt"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "Show above Metadata In Preview"
+text = "Show"
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="button apply" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_right = 50
+
+[node name="save_btn" type="Button" parent="MarginContainer/VBoxContainer/button apply"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Bake aab plugin files with these changes."
+theme_override_font_sizes/font_size = 20
+text = "Save"
+
+[node name="log" type="RichTextLabel" parent="MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 103.79)
+layout_mode = 2
+
+[node name="EditorPlugin" type="EditorPlugin" parent="."]
+script = ExtResource("2_potun")
+
+[node name="FileDialog" type="FileDialog" parent="."]
+oversampling_override = 1.0
+title = "Open a File"
+initial_position = 1
+file_mode = 0
+filters = PackedStringArray("*.png,*.svg;Image")
+use_native_dialog = true
+
+[connection signal="text_changed" from="MarginContainer/VBoxContainer/wp_name/wp_name_edit" to="EditorPlugin" method="_on_wp_name_edit_text_changed"]
+[connection signal="text_changed" from="MarginContainer/VBoxContainer/wp_auth/wp_author_edit" to="EditorPlugin" method="_on_wp_author_edit_text_changed"]
+[connection signal="text_changed" from="MarginContainer/VBoxContainer/wp_thumbnail/HBoxContainer/wp_iconpath_edit" to="EditorPlugin" method="_on_wp_iconpath_edit_text_changed"]
+[connection signal="button_up" from="MarginContainer/VBoxContainer/wp_thumbnail/HBoxContainer/fileDialogue" to="EditorPlugin" method="_on_fileDialogue_button_button_up"]
+[connection signal="toggled" from="MarginContainer/VBoxContainer/show mt/show_mt_cb" to="EditorPlugin" method="_on_show_mt_cb_toggled"]
+[connection signal="button_down" from="MarginContainer/VBoxContainer/button apply/save_btn" to="EditorPlugin" method="_on_button_button_down"]
+[connection signal="file_selected" from="FileDialog" to="EditorPlugin" method="_on_file_dialog_file_selected"]

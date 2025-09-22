@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>           
 <resources> 
-    <string name="wallpaper_description">EarthPi</string> 
-</resources> 
+    <string name="wallpaper_description">Godot</string>
+    <string name="author">othman</string>
+    <string name="contextUri">about:blank</string>
+</resources>

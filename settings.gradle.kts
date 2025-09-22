@@ -15,12 +15,6 @@ dependencyResolutionManagement {
     }
 }
 
-//include(":godot.4.4.beta1")
-// TODO: Update project's name.
 rootProject.name = "LiveWallpaper"
 include(":plugin")
-
-//include(":myapplication")
-//include(":godot4_4")
-//include(":godot_4_5")
 include(":GD4_5")

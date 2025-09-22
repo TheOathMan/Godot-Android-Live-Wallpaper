@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?> 
-<wallpaper 
+<wallpaper
     xmlns:android="http://schemas.android.com/apk/res/android" 
     android:thumbnail="@drawable/icon"
-    android:description="@string/wallpaper_description"/> 
+    android:description="@string/wallpaper_description"
+    android:author="@string/author"
+    android:showMetadataInPreview="false"
+    android:contextUri="@string/contextUri"/>

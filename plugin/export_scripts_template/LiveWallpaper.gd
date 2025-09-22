@@ -25,7 +25,6 @@ signal on_offsets_changed(Offset:Vector2, PixelOffset:Vector2i)
 signal homescreen_count_updated(count_x:int,count_y:int)
 
 
-
 # Start the live wallpaper service. return 0 if the device doesn't support live wallpaper service
 func start_live_wallpaper_service()->int:
 	return get_plugin().startWallpaperService()
