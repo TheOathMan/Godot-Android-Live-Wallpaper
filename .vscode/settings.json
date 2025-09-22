@@ -1,0 +1,18 @@
+{
+	"editor.quickSuggestions": { "other": true, "comments": false, "strings": true },
+	"editor.suggestOnTriggerCharacters": true,
+	"editor.suggest.showWords": true,
+	"editor.parameterHints.enabled": true,
+	"editor.inlineSuggest.enabled": true,
+	"editor.suggest.showInlineDetails": true,
+	"github.copilot.enable": {
+        "*": true,
+        "plaintext": false,
+        "markdown": true,
+        "scminput": false
+    },
+	"files.exclude": {
+		"**/.gradle": true,
+		"**/build": true
+	}
+}

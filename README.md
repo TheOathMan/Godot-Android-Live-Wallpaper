@@ -31,6 +31,13 @@ $LiveWallpaper.start_live_wallpaper_service()
 ```
 $LiveWallpaper.visibility_changed.connect(is_user_viewing_my_wallpaper)
 ```
+## Live Wallpaper settings
+
+<p align="center">
+  <img src="pictures/wp_settings.png" alt="wp1" width="300" style="margin: 30px;" />
+</p>
+
+A `LiveWallpaper` docked tab is going to show up next to Filesystem. From there you can set the wallpaper name and preview picture. The wallpaper name is going to show up in the live wallpaper picker, and the preview picture is going to show up as a thumbnail. Other metadata such as author and context URL are optional if you toggled show `Info In Preview` on.
 
 ## Building the plugin
 You might want to build the plugin yourself to set wallpaper name and preview picture. To build the plugin:
