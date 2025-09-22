@@ -40,7 +40,7 @@ $LiveWallpaper.visibility_changed.connect(is_user_viewing_my_wallpaper)
 A `LiveWallpaper` docked tab is going to show up next to Filesystem. From there you can set the wallpaper name and preview picture. The wallpaper name is going to show up in the live wallpaper picker, and the preview picture is going to show up as a thumbnail. Other metadata such as author and context URL are optional if you toggled show `Info In Preview` on.
 
 ## Building the plugin
-You might want to build the plugin yourself to set wallpaper name and preview picture. To build the plugin:
+To build the plugin from source, you either download Android Studio from [here](https://developer.android.com/studio), then open the project in Android Studio and build it, or you can use the command line. To build from the command line, you need to have the [Android SDK](https://developer.android.com/studio) and JDK 17 installed.
 
 - Open the terminal in the project's root directory, and run this command:
 ```
