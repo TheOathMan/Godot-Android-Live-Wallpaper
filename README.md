@@ -48,21 +48,21 @@ compile "Wallpaper Name" "path/to/your/thumbnail.png"
 ```
 - Make sure the thumbnail is in PNG format and its filename contains only lowercase letters with no spaces or numbers.
 
-- If everything goes as expected, static debug and release libraries will be compiled into the `plugin/addons/LiveWallpaper/bin` folder. After that, copy this `addons` folder into your Godot project folder, and enable the plugin.
+- the `compile` command is a windows batch file, so if you are on Linux or MacOS or just want to use `gradlew` directly, you can run this command instead: 
+```
+./gradlew assemble
+```
+
+- If everything goes as expected, static debug and release libraries will be compiled into the `plugin/addons/Android/LiveWallpaper/bin` folder. After that, copy `addons` folder into your Godot project folder then continue with the [steps.](#How-to-setup).
 
 ## Known Issues
 * Setting the app as a live wallpaper for the lock screen, home screen, or both will always set it to both in Android 14. A workaround is to set it manually from the device wallpaper settings.
 
-* Samsung's One UI launcher is known to have issues with calling the [`onOffsetsChanged()`](https://developer.android.com/reference/android/service/wallpaperWallpaperService.Engine#onOffsetsChanged(float,%20float,%20float,%20float,%20int%20int)) callback. This problem has been observed on various Samsung devices across different Android versions for years, including older models like the Note 8 and newer ones like the Galaxy S23. As a result, the signals `homescreen_count_updated` and `on_offsets_changed` do not function properly on stock Samsung launchers. A potential workaround is to download [`Pixel Launcher`](https://play.google.com/store/search?q=pixel+launcher&c=apps&hl=en), which is what I'm using, or [`Smart Launcher 6`](https://play.google.com/store/apps/details?id=ginlemon.flowerfree). These launchers (or any other third-party launchers available on the Play Store) should work fine with home screen signals.
-Samsung heavily customizes Android, including the launcher, which can interfere with certain system callbacks. In a production context, asking the end user to switch launchers just for the scrolling signals to work as intended is not ideal. Therefore, I recommend emulating home screen scrolling using Godot's touch input functions.
-
-
-
-
+* Samsung's One UI launcher can't call [`onOffsetsChanged()`](https://developer.android.com/reference/android/service/wallpaperWallpaperService.Engine#onOffsetsChanged(float,%20float,%20float,%20float,%20int%20int)) callback. This problem has been observed on various Samsung devices across different Android versions for years, including older models like the Note 8 and newer ones like the Galaxy S23. As a result, `homescreen_count_updated` and `on_offsets_changed` signals do not function properly on stock Samsung launchers. A potential solution is to switch to a third-party launcher that supports these callbacks. However, asking users to change their launcher is not ideal in a production context. Therefore, I recommend emulating home screen scrolling using Godot's touch input functions.
 
 ## Important Considerations:
 
-* The plugin will attempt to run your entire Godot application as a background live wallpaper, including handling all touch inputs. Therefore, ensure you query the is_live_wallpaper() function to delete or limit frame rate and free resources that are not essential to the live wallpaper process, such as UI elements. Check the sample project in the [`release`](https://github.com/TheOathMan/Godot-Android-Live-Wallpaper/releases) section for a working implementation of this.
+* The plugin will attempt to run your entire Godot application as a background live wallpaper, including handling all touch inputs. Therefore, ensure you query is_live_wallpaper() function to delete or limit frame rate and free resources that are not essential to the live wallpaper process, such as UI elements. Check the sample project in the [`release`](https://github.com/TheOathMan/Godot-Android-Live-Wallpaper/releases) section for a working implementation of this.
 
 * The plugin runs in the background, so be mindful of memory usage and power consumption once your app starts running as a live wallpaper. The plugin provides callback signals such as 'trim_memory' and 'visibility_changed'. Although the app pauses when it is no longer visible, ensure that you do not run intensive tasks when it becomes visible again.
 
