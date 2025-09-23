@@ -55,6 +55,9 @@ compile "Wallpaper Name" "path/to/your/thumbnail.png"
 
 - If everything goes as expected, static debug and release libraries will be compiled into the `plugin/addons/Android/LiveWallpaper/bin` folder. After that, copy `addons` folder into your Godot project folder then continue with the [steps.](#How-to-setup).
 
+## Tip
+I recommend adding `*/Editor/*` to your `Project`->`Export`->[Any Platform Preset]->`Resources`->`Filter to exclude folders from project`. This will prevent any assets inside a folder named `Editor` from being included in the final build including some files from this plugin.
+
 ## Known Issues
 * Setting the app as a live wallpaper for the lock screen, home screen, or both will always set it to both in Android 14. A workaround is to set it manually from the device wallpaper settings.
 
