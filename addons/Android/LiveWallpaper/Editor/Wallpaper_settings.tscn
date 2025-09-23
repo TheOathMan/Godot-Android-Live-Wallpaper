@@ -39,7 +39,7 @@ text = "Description"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Godot"
+text = "Godot Live Wallpaper"
 
 [node name="wp_auth" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -71,7 +71,7 @@ size_flags_horizontal = 3
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-text = "res://icon.svg"
+text = "res://icon.png"
 
 [node name="fileDialogue" type="Button" parent="MarginContainer/VBoxContainer/wp_thumbnail/HBoxContainer"]
 custom_minimum_size = Vector2(32.33, 0)
@@ -102,6 +102,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 tooltip_text = "Uri that specifies a link for further context of this wallpaper"
+text = "https://godotengine.org/"
 
 [node name="show mt" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -116,6 +117,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 tooltip_text = "Show above Metadata In Preview"
+button_pressed = true
 text = "Show"
 
 [node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
@@ -146,7 +148,7 @@ oversampling_override = 1.0
 title = "Open a File"
 initial_position = 1
 file_mode = 0
-filters = PackedStringArray("*.png,*.svg;Image")
+filters = PackedStringArray("*.png,*.WebP;Image")
 use_native_dialog = true
 
 [connection signal="text_changed" from="MarginContainer/VBoxContainer/wp_name/wp_name_edit" to="EditorPlugin" method="_on_wp_name_edit_text_changed"]
