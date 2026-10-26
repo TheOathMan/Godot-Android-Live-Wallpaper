@@ -74,3 +74,31 @@ compile "Wallpaper Name" "path/to/your/thumbnail.png"
 
 * The plugin runs in the background, so be mindful of memory usage and power consumption once your app starts running as a live wallpaper. The plugin provides callback signals such as 'trim_memory' and 'visibility_changed'. Although the app pauses when it is no longer visible, ensure that you do not run intensive tasks when it becomes visible again.
 
+
+## Technical Disclaimer: Modified GLSurfaceView
+
+This plugin ships a **modified copy of Godot's `GLSurfaceView`**
+(`plugin/src/main/java/org/godotengine/plugin/android/LiveWallpaper/gl/GLSurfaceViewWP.java`).
+
+**Why:** A live wallpaper runs inside Android's `WallpaperService.Engine`, whose surface
+lifecycle requires the render thread to be synchronized with surface create/destroy,
+pause/resume and resize events. Android's original `GLSurfaceView` did this by blocking
+the calling thread until the GL thread finished. Godot removed those waits to fix ANRs and
+StrictMode violations reported in Google Play Console, which breaks wallpaper rendering.
+This plugin restores them in a separate class. All changes are marked `[WP]` in the file.
+
+**Scope:** `GLSurfaceViewWP` is only used when your app is running **as a live wallpaper**.
+When your app runs normally, it uses Godot's own `GLSurfaceView` and is unaffected.
+
+**Requirements:** Because this is an OpenGL ES `GLSurfaceView`, the plugin works only with
+the **Compatibility** renderer. **Vulkan (Forward+ / Mobile) is not supported.**
+
+**What this means for you:**
+- This is a workaround, not an officially supported Godot or Android approach.
+- Wallpaper lifecycle events can block the calling thread while the GL thread finishes its
+  work, so a stalled render thread may cause ANRs in the wallpaper process.
+- Behavior may vary across devices, Android versions and launchers, and may need updating
+  when Godot changes its Android rendering code.
+- Please report stalls, black screens or ANRs with device and Android version details.
+
+The file is derived from Godot (MIT) and AOSP (Apache 2.0); original notices are preserved.
